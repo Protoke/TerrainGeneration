@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "qmath.h"
-
 class Vec {
 public:
 	virtual double length() = 0;
 };
 
-class Vec3;
 class Vec2;
+class Vec3;
+class Point2;
+class Point3;
 
 class Vec2 : public Vec {
 public:
@@ -35,6 +35,7 @@ public:
 };
 
 class Point2 : public Vec2 {
+public:
 	Point2();
 	Point2(double x, double y);
 	Point2(const Vec2& v);
@@ -44,22 +45,30 @@ class Point2 : public Vec2 {
 };
 
 class Point3 : public Vec3 {
+public:
 	Point3();
 	Point3(double x, double y, double z);
-	Point3(const Vec2& v);
+	Point3(const Vec2& v,  double z);
 	Point3(const Vec3& v);
-	Point3(const Point2& p);
+	Point3(const Point2& p, double z);
 	Point3(const Point3& p);
 };
 
-inline double dot(const Vec3& va, const Vec3& vb) {
-	return va.x * vb.x + va.y * vb.y + va.z * vb.z;
-}
+Vec2 operator+ (const Vec2& v1, const Vec2& v2);
+Vec2 operator+ (const Point2& p, const Vec2& v);
+Vec2 operator- (const Vec2& v1, const Vec2& v2);
+Vec2 operator- (const Point2& p1, const Point2& p2);
+Vec2 operator- (const Point2& p, const Vec2& v);
+Vec2 operator* (const Vec2& v, double d);
+Vec2 operator/ (const Vec2& v, double d);
 
-inline Vec3 cross(const Vec3& va, const Vec3& vb) {
-	return Vec3(
-		va.y * vb.z - va.z * vb.y,
-		va.x * vb.z - va.z * vb.x,
-		va.x * vb.y - va.y * vb.x
-	);
-}
+Vec3 operator+ (const Vec3& v1, const Vec3& v2);
+Vec3 operator+ (const Point3& p, const Vec3& v);
+Vec3 operator- (const Vec3& v1, const Vec3& v2);
+Vec3 operator- (const Point3& p1, const Point3& p2);
+Vec3 operator- (const Point3& p, const Vec3& v);
+Vec3 operator* (const Vec3& v, double d);
+Vec3 operator/ (const Vec3& v, double d);
+
+double dot(const Vec3& va, const Vec3& vb);
+Vec3 cross(const Vec3& va, const Vec3& vb);
