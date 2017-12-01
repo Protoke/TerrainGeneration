@@ -7,8 +7,14 @@
 message("You are running qmake on a generated .pro file. This may not work!")
 
 
-HEADERS += ./app.h
+HEADERS += ./box.h \
+    ./app.h \
+    ./vec.h \
+    ./scalarfield.h
 SOURCES += ./app.cpp \
-    ./main.cpp
+    ./box.cpp \
+    ./main.cpp \
+    ./vec.cpp \
+    ./scalarfield.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc
