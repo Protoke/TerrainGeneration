@@ -83,6 +83,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="scalarfield.cpp" />
     <ClCompile Include="vec.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +113,7 @@
   <ItemGroup>
     <ClInclude Include="box.h" />
     <ClInclude Include="GeneratedFiles\ui_app.h" />
+    <ClInclude Include="scalarfield.h" />
     <CustomBuild Include="vec.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </Message>
