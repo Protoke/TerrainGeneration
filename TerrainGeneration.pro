@@ -4,16 +4,8 @@
 
 TEMPLATE = app
 TARGET = TerrainGeneration
-DESTDIR = ./x64/Debug
+
 QT += core widgets gui
 CONFIG += debug
-DEFINES += _UNICODE WIN64 QT_DLL QT_WIDGETS_LIB
-INCLUDEPATH += ./GeneratedFiles \
-    . \
-    ./GeneratedFiles/Debug
-DEPENDPATH += .
-MOC_DIR += ./GeneratedFiles/debug
-OBJECTS_DIR += debug
-UI_DIR += ./GeneratedFiles
-RCC_DIR += ./GeneratedFiles
+
 include(TerrainGeneration.pri)
