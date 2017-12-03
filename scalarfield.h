@@ -13,10 +13,13 @@ public:
 		INTERPOL_BICUBIC
 	};
 
-	void load(const QImage& image, Point2 bl, Point2 tr, double zMin, double zMax);
+    void load(const QImage& image,
+              const Point2& bl, const Point2& tr,
+              double zMin, double zMax);
 
 	Point3 operator() (int i, int j);
-	Point3 operator() (double x, double y, interpolationType interpolation = INTERPOL_TRIANGULAR);
+    Point3 operator() (double x, double y,
+                       interpolationType interpolation = INTERPOL_TRIANGULAR);
 
 private:
 	int index(int i, int j);
