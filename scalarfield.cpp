@@ -3,7 +3,7 @@
 #include <stdexcept> 
 
 void ScalarField::load(const QImage& image,
-                       const Point2& bl, const Point2& tr,
+                       const Vec2& bl, const Vec2& tr,
                        double zMin, double zMax)
 {
     this->m_bl = bl;
@@ -41,14 +41,14 @@ double ScalarField::height(double x, double y,
 
 double ScalarField::triangularInterpol(double x, double y) {
     // Local coordonates
-    Point2 pLocal = Point2((x + m_bl.x) / (m_tr.x - m_bl.x),
+    Vec2 pLocal = Vec2((x + m_bl.x) / (m_tr.x - m_bl.x),
                            (y - m_bl.y) / (m_tr.y - m_bl.y));
 
     // Cell coordonates
-    Point2 cell = Point2(int(pLocal.x * m_nx), int(pLocal.y * m_ny));
+    Vec2 cell = Vec2(int(pLocal.x * m_nx), int(pLocal.y * m_ny));
 
     // In-cell coordonnates
-    Point2 pCell = Point2(pLocal.x - cell.x * (m_tr.x - m_bl.x) / m_nx,
+    Vec2 pCell = Vec2(pLocal.x - cell.x * (m_tr.x - m_bl.x) / m_nx,
                           pLocal.y - cell.y * (m_tr.y - m_bl.y) / m_ny);
 
     if (pLocal.x + pLocal.y < 1.0) {

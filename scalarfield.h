@@ -14,7 +14,7 @@ public:
 	};
 
     void load(const QImage& image,
-              const Point2& m_bl, const Point2& m_tr,
+              const Vec2& m_bl, const Vec2& m_tr,
               double zMin, double zMax);
 
     double height(int i, int j);
@@ -30,5 +30,5 @@ private:
 
     QVector<float> m_height;
     int m_nx, m_ny;
-    Point2 m_bl, m_tr;
+    Vec2 m_bl, m_tr;
 };
