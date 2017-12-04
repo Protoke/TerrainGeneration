@@ -6,6 +6,6 @@ TEMPLATE = app
 TARGET = TerrainGeneration
 
 QT += core widgets gui opengl
-CONFIG += debug
+CONFIG += debug c++11
 
 include(TerrainGeneration.pri)

@@ -12,7 +12,8 @@ HEADERS += ./box.h \
     ./vec.h \
     ./scalarfield.h \
     ./heightfield.h \
-    ./array.h
+    ./array.h \
+    ./analyticheightfield.h
     #./mesh.h \
     #./gldisplay.h
 SOURCES += ./app.cpp \
@@ -21,7 +22,8 @@ SOURCES += ./app.cpp \
     ./vec.cpp \
     ./scalarfield.cpp \
     ./heightfield.cpp \
-    ./array.cpp
+    ./array.cpp \
+    ./analyticheightfield.cpp
     #./mesh.cpp \
     #./gldisplay.cpp
 FORMS += ./app.ui

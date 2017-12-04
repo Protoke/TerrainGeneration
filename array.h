@@ -11,6 +11,7 @@ public:
     Array2(const Array2& a, int nx, int ny);
 
     int index(int i, int j);
+    Vec2 localCoordinates(double x, double y);
 
     int nx, ny;
 };
