@@ -24,6 +24,10 @@ Vec3 ScalarField::point(int x, int y) {
     return Vec3(x, y, value(x, y));
 }
 
+Vec3 ScalarField::point(double x, double y) {
+    return Vec3(x, y, value(x, y));
+}
+
 double ScalarField::value(int i, int j){
     return m_h[index(i,j)];
 }
@@ -40,15 +44,15 @@ double ScalarField::value(double x, double y,
 }
 
 double ScalarField::triangularInterpol(double x, double y) {
-    // Local coordonates
+    // Local coordinates
     Vec2 pLocal = localCoordinates(x, y);
 
-    // Cell coordonates
+    // Cell coordinates
     Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny));
     int cellX = (int) cell.x;
     int cellY = (int) cell.y;
 
-    // In-cell coordonnates
+    // In-cell coordinates
     Vec2 pCell = Vec2(pLocal.x - cell.x * (tr.x - bl.x) / nx,
                           pLocal.y - cell.y * (tr.y - bl.y) / ny);
 
