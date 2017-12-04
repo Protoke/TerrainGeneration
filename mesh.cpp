@@ -14,7 +14,7 @@ bool Mesh::saveOBJ(){
     throw std::logic_error("Not implemented");
 }
 
-int Mesh::getId(const Point3& p){
+int Mesh::getId(const Vec3& p){
     for(int i = 0; i < m_vertices.size(); ++i){
         if(p == m_vertices[i])
             return i;
@@ -30,7 +30,7 @@ int Mesh::getId(const Face& f){
     return -1;
 }
 
-Point3& Mesh::vertex(int id){
+Vec3& Mesh::vertex(int id){
     return m_vertices[id];
 }
 
