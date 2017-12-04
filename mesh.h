@@ -22,9 +22,9 @@ public:
     bool loadOBJ(const QString& filename);
     bool saveOBJ();
 
-    int getId(const Point3& p);
+    int getId(const Vec3& p);
     int getId(const Face& f);
-    Point3& vertex(int id);
+    Vec3& vertex(int id);
     Face& face(int id);
     int nbVertices();
     int nbFaces();
@@ -33,7 +33,7 @@ public:
 
 private:
     QVector<Face> m_faces;
-    QVector<Point3> m_vertices;
+    QVector<Vec3> m_vertices;
 };
 
 #endif // MESH_H
