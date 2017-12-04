@@ -31,6 +31,4 @@ private:
     double bicubicInterpol(double x, double y);
 
     QVector<double> m_h;
-    int m_nx, m_ny;
-    Vec2 m_bl, m_tr;
 };

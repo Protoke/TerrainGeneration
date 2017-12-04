@@ -6,14 +6,14 @@ void ScalarField::load(const QImage& image,
                        const Vec2& bl, const Vec2& tr,
                        double zMin, double zMax)
 {
-    this->m_bl = bl;
-    this->m_tr = tr;
-    m_nx = image.width();
-    m_ny = image.height();
-    m_h.resize((m_nx - 1) * (m_ny - 1));
+    this->bl = bl;
+    this->tr = tr;
+    nx = image.width();
+    ny = image.height();
+    m_h.resize((nx - 1) * (ny - 1));
 
-    for(int i = 0; i < m_nx; ++i){
-        for(int j = 0; j < m_ny; ++j){
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
             m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin)
                     + zMin;
         }
@@ -41,17 +41,16 @@ double ScalarField::value(double x, double y,
 
 double ScalarField::triangularInterpol(double x, double y) {
     // Local coordonates
-    Vec2 pLocal = Vec2((x + m_bl.x) / (m_tr.x - m_bl.x),
-                           (y - m_bl.y) / (m_tr.y - m_bl.y));
+    Vec2 pLocal = localCoordinates(x, y);
 
     // Cell coordonates
-    Vec2 cell = Vec2(int(pLocal.x * m_nx), int(pLocal.y * m_ny));
+    Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny));
     int cellX = (int) cell.x;
     int cellY = (int) cell.y;
 
     // In-cell coordonnates
-    Vec2 pCell = Vec2(pLocal.x - cell.x * (m_tr.x - m_bl.x) / m_nx,
-                          pLocal.y - cell.y * (m_tr.y - m_bl.y) / m_ny);
+    Vec2 pCell = Vec2(pLocal.x - cell.x * (tr.x - bl.x) / nx,
+                          pLocal.y - cell.y * (tr.y - bl.y) / ny);
 
     if (pLocal.x + pLocal.y < 1.0) {
         return (1 - pCell.x - pCell.y) * value(cellX, cellY)
