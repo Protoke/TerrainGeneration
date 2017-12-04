@@ -11,16 +11,16 @@ HEADERS += ./box.h \
     ./app.h \
     ./vec.h \
     ./scalarfield.h \
-    ./heightfield.h \
-    ./mesh.h \
-    ./gldisplay.h
+    ./heightfield.h #\
+    #./mesh.h \
+    #./gldisplay.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
     ./vec.cpp \
     ./scalarfield.cpp \
-    ./heightfield.cpp \
-    ./mesh.cpp \
-    ./gldisplay.cpp
+    ./heightfield.cpp #\
+    #./mesh.cpp \
+    #./gldisplay.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc
