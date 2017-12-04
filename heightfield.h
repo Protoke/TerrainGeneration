@@ -7,6 +7,9 @@
 class HeightField : public ScalarField
 {
 public:
+    Vec3 normal(int i, int j);
+    Vec3 normal(double x, double y);
+
     bool inside(const Vec3& p);
 
 //    Mesh* createMesh();

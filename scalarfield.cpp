@@ -20,10 +20,6 @@ void ScalarField::load(const QImage& image,
     }
 }
 
-int ScalarField::index(int i, int j) {
-    return i*m_ny + j;
-}
-
 double ScalarField::height(int i, int j){
     return m_height[index(i,j)];
 }
