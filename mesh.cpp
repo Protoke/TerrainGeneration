@@ -46,6 +46,14 @@ int Mesh::nbFaces(){
     return m_faces.size();
 }
 
+void Mesh::addVertex(const Vec3& v){
+    m_vertices.push_back(v);
+}
+
+void Mesh::addFace(const Face& f){
+    m_faces.push_back(f);
+}
+
 void Mesh::draw(){
     glLineWidth(1.0);
     glBegin(GL_TRIANGLES);
