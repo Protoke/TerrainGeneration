@@ -20,6 +20,8 @@ public:
 
     Vec3 point(int x, int y);
 
+    Vec3 point(double x, double y);
+
     double value(int x, int y);
 
     double value(double x, double y,

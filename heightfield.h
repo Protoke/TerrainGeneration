@@ -12,7 +12,7 @@ public:
 
     Vec3 normal(int i, int j);
 
-    Vec3 normal(double x, double y);
+    Vec3 normal(double i, double j);
 
 
 //    Mesh* createMesh();
