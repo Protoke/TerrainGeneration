@@ -17,18 +17,15 @@ public:
               const Vec2& m_bl, const Vec2& m_tr,
               double zMin, double zMax);
 
-    double height(int i, int j);
-    double height(double x, double y,
+    double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR);
 
 private:
-	int index(int i, int j);
-
     double triangularInterpol(double x, double y);
     double bilinearInterpol(double x, double y);
     double bicubicInterpol(double x, double y);
 
-    QVector<float> m_height;
+    QVector<double> m_h;
     int m_nx, m_ny;
     Vec2 m_bl, m_tr;
 };

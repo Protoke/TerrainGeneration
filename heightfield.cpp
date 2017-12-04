@@ -1,5 +1,5 @@
 #include "heightfield.h"
 
 bool HeightField::inside(const Vec3 &p){
-    return p.z < height(p.x, p.y);
+    return p.z < value(p.x, p.y);
 }

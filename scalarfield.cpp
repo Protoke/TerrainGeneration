@@ -10,25 +10,17 @@ void ScalarField::load(const QImage& image,
     this->m_tr = tr;
     m_nx = image.width();
     m_ny = image.height();
-    m_height.resize((m_nx - 1) * (m_ny - 1));
+    m_h.resize((m_nx - 1) * (m_ny - 1));
 
     for(int i = 0; i < m_nx; ++i){
         for(int j = 0; j < m_ny; ++j){
-            m_height[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin)
+            m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin)
                     + zMin;
         }
     }
 }
 
-int ScalarField::index(int i, int j) {
-    return i*m_ny + j;
-}
-
-double ScalarField::height(int i, int j){
-    return m_height[index(i,j)];
-}
-
-double ScalarField::height(double x, double y,
+double ScalarField::value(double x, double y,
                            interpolationType interpolation)
 {
     switch(interpolation){
@@ -46,20 +38,22 @@ double ScalarField::triangularInterpol(double x, double y) {
 
     // Cell coordonates
     Vec2 cell = Vec2(int(pLocal.x * m_nx), int(pLocal.y * m_ny));
+    int cellX = (int) cell.x;
+    int cellY = (int) cell.y;
 
     // In-cell coordonnates
     Vec2 pCell = Vec2(pLocal.x - cell.x * (m_tr.x - m_bl.x) / m_nx,
                           pLocal.y - cell.y * (m_tr.y - m_bl.y) / m_ny);
 
     if (pLocal.x + pLocal.y < 1.0) {
-        return (1 - pCell.x - pCell.y) * height(cell.x,cell.y)
-               + pCell.x * height(cell.x+1,cell.y)
-               + pCell.y * height(cell.x,cell.y+1);
+        return (1 - pCell.x - pCell.y) * value(cellX, cellY)
+               + pCell.x * value(cellX+1, cellY)
+               + pCell.y * value(cellX, cellY+1);
     }
     //else
-    return (pCell.x + pCell.y - 1) * height(cell.x+1,cell.y+1)
-           + (1 - pCell.x) * height(cell.x+1,cell.y)
-           + (1 - pCell.y) * height(cell.x,cell.y+1);
+    return (pCell.x + pCell.y - 1) * value(cellX+1, cellY+1)
+           + (1 - pCell.x) * value(cellX+1, cellY)
+           + (1 - pCell.y) * value(cellX, cellY+1);
 }
 
 double ScalarField::bilinearInterpol(double x, double y) {
