@@ -4,8 +4,9 @@
 #include <QImage>
 
 #include "vec.h"
+#include "array.h"
 
-class ScalarField {
+class ScalarField : public Array2 {
 public:
 	enum interpolationType {
 		INTERPOL_TRIANGULAR = 0,
