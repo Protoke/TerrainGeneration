@@ -12,11 +12,11 @@ Vec3::Vec3(double x, double y, double z) : x(x), y(y), z(z) { }
 Vec3::Vec3(const Vec2& v, double z) : x(v.x), y(v.y), z(z) { }
 Vec3::Vec3(const Vec3& v) : x(v.x), y(v.y), z(v.z) { }
 
-double Vec2::length() {
+double Vec2::length() const {
 	return qSqrt(x * x + y * y);
 }
 
-double Vec3::length() {
+double Vec3::length() const {
 	return qSqrt(x * x + y * y + z * z);
 }
 
@@ -70,4 +70,8 @@ Vec3 cross(const Vec3& va, const Vec3& vb) {
 		va.x * vb.z - va.z * vb.x,
 		va.x * vb.y - va.y * vb.x
 	);
+}
+
+Vec3 normalize(const Vec3& v) {
+    return v / v.length();
 }

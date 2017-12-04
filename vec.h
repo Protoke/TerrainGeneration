@@ -2,7 +2,7 @@
 
 class Vec {
 public:
-	virtual double length() = 0;
+    virtual double length() const = 0;
 };
 
 class Vec2;
@@ -15,7 +15,7 @@ public:
 	Vec2(const Vec2& v);
 	Vec2(const Vec3& v);
 
-	double length();
+    double length() const;
 
 	double x, y;
 };
@@ -27,7 +27,7 @@ public:
 	Vec3(const Vec2& v, double z);
 	Vec3(const Vec3& v);
 
-	double length();
+    double length() const;
 
 	double x, y, z;
 };
@@ -47,3 +47,5 @@ bool operator== (const Vec3& v1, const Vec3& v2);
 
 double dot(const Vec3& va, const Vec3& vb);
 Vec3 cross(const Vec3& va, const Vec3& vb);
+
+Vec3 normalize(const Vec3& v);

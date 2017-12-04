@@ -20,6 +20,13 @@ void ScalarField::load(const QImage& image,
     }
 }
 
+Vec3 ScalarField::point(int x, int y) {
+    return Vec3(x, y, value(x, y));
+}
+
+double ScalarField::value(int i, int j){
+    return m_h[index(i,j)];
+}
 
 double ScalarField::value(double x, double y,
                            interpolationType interpolation)

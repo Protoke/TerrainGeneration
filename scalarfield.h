@@ -18,6 +18,10 @@ public:
               const Vec2& m_bl, const Vec2& m_tr,
               double zMin, double zMax);
 
+    Vec3 point(int x, int y);
+
+    double value(int x, int y);
+
     double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR);
 
