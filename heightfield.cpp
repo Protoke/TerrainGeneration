@@ -19,18 +19,39 @@ Vec3 HeightField::normal(int i, int j){
         // case inside terrain
         n = cross(r, t) + cross(t, tl) + cross(tl, l) + cross(l, b) +
             cross(b, br) + cross(br, r);
-    }
-    /*else if(i == 0 && j > 0 && j < ny-1) {
+
+    }else if(i == 0 && j > 0 && j < ny-1) {
         // case left border
         n = cross(b, br) + cross(br, r) + cross(r, t);
+
     }else if(i == nx-1 && j > 0 && j < ny-1) {
         // case right border
         n = cross(t, tl) + cross(tl, l) + cross(l, b);
+
     }else if(i > 0 && i < nx-1 && j == 0) {
         // case bottom border
-        n = cross();
-    }*/
+        n = cross(r,t) + cross(t, tl) + cross(tl, l);
 
+    }else if(i > 0 && i < nx-1 && j == ny-1) {
+        // case top border
+        n = cross(l, b) + cross(b, br) + cross(br, r);
+
+    }else if(i == 0 && j == 0) {
+        // case bottom left corner
+        n = cross(r, t);
+
+    }else if(i == 0 && j == ny-1) {
+        // case top left corner
+        n = cross(b, br) + cross(br, r);
+
+    }else if(i == nx-1 && j == 0) {
+        // case bottom right corner
+        n = cross(t, tl) + cross(tl, l);
+
+    }else if(i == nx-1 && j == ny-1) {
+        // case top right corner
+        n = cross(l, b);
+    }
 
     return normalize(n);
 }
