@@ -14,21 +14,21 @@ public:
 	};
 
     void load(const QImage& image,
-              const Point2& bl, const Point2& tr,
+              const Point2& m_bl, const Point2& m_tr,
               double zMin, double zMax);
 
-	Point3 operator() (int i, int j);
-    Point3 operator() (double x, double y,
-                       interpolationType interpolation = INTERPOL_TRIANGULAR);
+    double height(int i, int j);
+    double height(double x, double y,
+                  interpolationType interpolation = INTERPOL_TRIANGULAR);
 
 private:
 	int index(int i, int j);
 
-	Point3 triangularInterpol(double x, double y);
-	Point3 bilinearInterpol(double x, double y);
-	Point3 bicubicInterpol(double x, double y);
+    double triangularInterpol(double x, double y);
+    double bilinearInterpol(double x, double y);
+    double bicubicInterpol(double x, double y);
 
-	QVector<float> height;
-	int nx, ny;
-	Point2 bl, tr;
+    QVector<float> m_height;
+    int m_nx, m_ny;
+    Point2 m_bl, m_tr;
 };

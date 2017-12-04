@@ -70,5 +70,10 @@ Vec3 operator- (const Point3& p, const Vec3& v);
 Vec3 operator* (const Vec3& v, double d);
 Vec3 operator/ (const Vec3& v, double d);
 
+bool operator== (const Vec2& v1, const Vec2& v2);
+bool operator== (const Vec3& v1, const Vec3& v2);
+bool operator== (const Point2& p1, const Point2& p2);
+bool operator== (const Point3& p1, const Point3& p2);
+
 double dot(const Vec3& va, const Vec3& vb);
 Vec3 cross(const Vec3& va, const Vec3& vb);

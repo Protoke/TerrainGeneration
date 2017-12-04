@@ -90,6 +90,22 @@ Vec3 operator/ (const Vec3& v, double d) {
 	return Vec3(v.x / d, v.y / d, v.z / d);
 }
 
+bool operator== (const Vec2& v1, const Vec2& v2){
+    return v1.x == v2.x && v1.y == v2.y;
+}
+
+bool operator== (const Vec3& v1, const Vec3& v2){
+    return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+}
+
+bool operator== (const Point2& p1, const Point2& p2){
+    return p1.x == p2.x && p1.y == p2.y;
+}
+
+bool operator== (const Point3& p1, const Point3& p2){
+    return p1.x == p2.x && p1.y == p2.y && p1.z == p2.z;
+}
+
 
 double dot(const Vec3& va, const Vec3& vb) {
 	return va.x * vb.x + va.y * vb.y + va.z * vb.z;

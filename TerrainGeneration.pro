@@ -5,7 +5,7 @@
 TEMPLATE = app
 TARGET = TerrainGeneration
 
-QT += core widgets gui
+QT += core widgets gui opengl
 CONFIG += debug
 
 include(TerrainGeneration.pri)

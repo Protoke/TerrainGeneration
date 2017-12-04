@@ -4,19 +4,23 @@
 
 # This is a reminder that you are using a generated .pro file.
 # Remove it when you are finished editing this file.
-message("You are running qmake on a generated .pro file. This may not work!")
+# message("You are running qmake on a generated .pro file. This may not work!")
 
 
 HEADERS += ./box.h \
     ./app.h \
     ./vec.h \
     ./scalarfield.h \
-    $$PWD/heightfiled.h
+    ./heightfield.h \
+    ./mesh.h \
+    ./gldisplay.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
     ./vec.cpp \
     ./scalarfield.cpp \
-    $$PWD/heightfiled.cpp
+    ./heightfield.cpp \
+    ./mesh.cpp \
+    ./gldisplay.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc
