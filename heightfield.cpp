@@ -88,6 +88,5 @@ Vec3 HeightField::normal(double i, double j){
            + (1 - pCell.x) * normal(cellX+1, cellY)
            + (1 - pCell.y) * normal(cellX, cellY+1);
 
-
     return normalize(n);
 }
