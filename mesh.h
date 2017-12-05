@@ -28,6 +28,8 @@ public:
     Face& face(int id);
     int nbVertices();
     int nbFaces();
+    void addVertex(const Vec3& v);
+    void addFace(const Face& f);
 
     void draw();
 
