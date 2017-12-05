@@ -32,6 +32,10 @@ Vec2 operator* (const Vec2& v, double d) {
 	return Vec2(v.x * d, v.y * d);
 }
 
+Vec2 operator* (double d, const Vec2& v){
+    return v * d;
+}
+
 Vec2 operator/ (const Vec2& v, double d) {
 	return Vec2(v.x / d, v.y / d);
 }
@@ -46,6 +50,10 @@ Vec3 operator- (const Vec3& v1, const Vec3& v2) {
 
 Vec3 operator* (const Vec3& v, double d) {
 	return Vec3(v.x * d, v.y * d, v.z * d);
+}
+
+Vec3 operator* (double d, const Vec3& v) {
+    return v * d;
 }
 
 Vec3 operator/ (const Vec3& v, double d) {
