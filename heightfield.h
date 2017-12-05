@@ -3,6 +3,7 @@
 
 #include "scalarfield.h"
 #include "vec.h"
+#include "mesh.h"
 
 class HeightField : public ScalarField
 {
@@ -15,7 +16,7 @@ public:
     Vec3 normal(double i, double j);
 
 
-//    Mesh* createMesh();
+    Mesh createMesh();
 };
 
 #endif // HEIGHTFILED_H

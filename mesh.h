@@ -17,10 +17,8 @@ bool operator== (const Face& f1, const Face& f2);
 class Mesh
 {
 public:
-    Mesh();
-
     bool loadOBJ(const QString& filename);
-    bool saveOBJ();
+    bool saveOBJ(const QString& filename);
 
     int getId(const Vec3& p);
     int getId(const Face& f);

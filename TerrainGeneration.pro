@@ -10,6 +10,3 @@ CONFIG += debug c++11
 
 include(TerrainGeneration.pri)
 
-HEADERS +=
-
-SOURCES +=

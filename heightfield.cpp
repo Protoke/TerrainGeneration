@@ -116,3 +116,30 @@ Vec3 HeightField::normal(double i, double j){
 
     return normalize(n);
 }
+
+Mesh HeightField::createMesh(){
+    Mesh m;
+
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            m.addVertex(point(i,j));
+        }
+    }
+
+    for(int i = 0; i < nx-1; i++){
+        for(int j = 0; j < ny-1; ++j){
+            Face fbl, ftr;
+            fbl.v[0] = index(i, j);
+            fbl.v[1] = index(i+1, j);
+            fbl.v[2] = index(i, j+1);
+            ftr.v[0] = index(i+1, j);
+            ftr.v[1] = index(i+1, j+1);
+            ftr.v[2] = index(i, j+1);
+
+            m.addFace(fbl);
+            m.addFace(ftr);
+        }
+    }
+
+    return m;
+}

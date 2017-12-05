@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <QTextStream>
 
 using namespace std;
 
@@ -52,6 +53,11 @@ bool operator== (const Vec2& v1, const Vec2& v2);
 bool operator== (const Vec3& v1, const Vec3& v2);
 
 inline ostream& operator<<(ostream& os, const Vec3& v)
+{
+    os << v.x << ' ' << v.y << ' ' << v.z;
+    return os;
+}
+inline QTextStream& operator<<(QTextStream& os, const Vec3& v)
 {
     os << v.x << ' ' << v.y << ' ' << v.z;
     return os;

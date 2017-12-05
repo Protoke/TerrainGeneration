@@ -10,11 +10,11 @@ void ScalarField::load(const QImage& image,
     this->tr = tr;
     nx = image.width();
     ny = image.height();
-    m_h.resize((nx - 1) * (ny - 1));
+    m_h.resize((nx) * (ny));
 
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
-            m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin)
+            m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin) / 255.0
                     + zMin;
         }
     }

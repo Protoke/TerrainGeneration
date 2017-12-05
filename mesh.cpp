@@ -1,6 +1,12 @@
 #include "mesh.h"
 
+#include <QFile>
+#include <QTextStream>
+#include <iostream>
+
 #include <GL/gl.h>
+
+using namespace std;
 
 bool operator== (const Face& f1, const Face& f2){
     return f1.v[0] == f2.v[0] && f1.v[1] == f2.v[1] && f1.v[2] == f2.v[2];
@@ -10,8 +16,30 @@ bool Mesh::loadOBJ(const QString& filename){
     throw std::logic_error("Not implemented");
 }
 
-bool Mesh::saveOBJ(){
-    throw std::logic_error("Not implemented");
+bool Mesh::saveOBJ(const QString& filename){
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadWrite)){
+        return false;
+    }
+
+    QTextStream stream(&file);
+
+    stream << "o mesh" << endl << endl;
+
+    QVectorIterator<Vec3> itv(m_vertices);
+    while(itv.hasNext()){
+        stream << "v " << itv.next() << endl;
+    }
+    stream << endl;
+
+    QVectorIterator<Face> itf(m_faces);
+    while(itf.hasNext()){
+        Face f = itf.next();
+        stream << "f " << f.v[0] << " " << f.v[1] << " " << f.v[2] << endl;
+    }
+    stream << endl;
+
+    return true;
 }
 
 int Mesh::getId(const Vec3& p){
