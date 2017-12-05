@@ -13,7 +13,8 @@ HEADERS += ./box.h \
     ./scalarfield.h \
     ./heightfield.h \
     ./array.h \
-    ./analyticheightfield.h
+    ./analyticheightfield.h \
+    $$PWD/layerfield.h
     #./mesh.h \
     #./gldisplay.h
 SOURCES += ./app.cpp \
@@ -23,7 +24,8 @@ SOURCES += ./app.cpp \
     ./scalarfield.cpp \
     ./heightfield.cpp \
     ./array.cpp \
-    ./analyticheightfield.cpp
+    ./analyticheightfield.cpp \
+    $$PWD/layerfield.cpp
     #./mesh.cpp \
     #./gldisplay.cpp
 FORMS += ./app.ui

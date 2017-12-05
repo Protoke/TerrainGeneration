@@ -15,7 +15,7 @@ public:
 	};
 
     void load(const QImage& image,
-              const Vec2& m_bl, const Vec2& m_tr,
+              const Vec2& bl, const Vec2& tr,
               double zMin, double zMax);
 
     Vec3 point(int x, int y);
