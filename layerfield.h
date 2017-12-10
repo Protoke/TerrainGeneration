@@ -6,8 +6,6 @@
 class LayerField
 {
 public:
-    LayerField();
-
     void load (const QImage& imageBR,
                const QImage& imageS,
                const Vec2& bl, const Vec2& tr,
@@ -18,7 +16,7 @@ public:
 
     double height(double i, double j);
 
-    void thermal(const double stress);
+    void thermal(const double k);
 
     void addSand(const double h);
 

@@ -32,6 +32,10 @@ double ScalarField::value(int i, int j){
     return m_h[index(i,j)];
 }
 
+void ScalarField::setValue(int i, int j, int v) {
+    m_h[index(i,j)] = v;
+}
+
 double ScalarField::value(double x, double y,
                            interpolationType interpolation)
 {
