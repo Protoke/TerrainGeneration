@@ -117,24 +117,29 @@ Vec3 HeightField::normal(double i, double j){
     return normalize(n);
 }
 
-Mesh HeightField::createMesh(){
+Mesh HeightField::createMesh(int stepi, int stepj){
     Mesh m;
 
-    for(int i = 0; i < nx; ++i){
-        for(int j = 0; j < ny; ++j){
+    for(int i = 0; i < nx; i+=stepi){
+        for(int j = 0; j < ny; j+=stepj){
             m.addVertex(point(i,j));
         }
     }
 
-    for(int i = 0; i < nx-1; i++){
-        for(int j = 0; j < ny-1; ++j){
+    int nyReduced = int(ny/stepj);
+
+    for(int i = 0; i < nx-stepi; i+=stepi){
+        for(int j = 0; j < ny-stepj; j+=stepj){
             Face fbl, ftr;
-            fbl.v[0] = index(i, j);
-            fbl.v[1] = index(i+1, j);
-            fbl.v[2] = index(i, j+1);
-            ftr.v[0] = index(i+1, j);
-            ftr.v[1] = index(i+1, j+1);
-            ftr.v[2] = index(i, j+1);
+            int iReduced = i/stepi;
+            int jReduced = j/stepj;
+
+            fbl.v[0] = iReduced * nyReduced + jReduced;
+            fbl.v[1] = (iReduced+1) * nyReduced + jReduced;
+            fbl.v[2] = iReduced * nyReduced + (jReduced+1);
+            ftr.v[0] = (iReduced+1) * nyReduced + jReduced;
+            ftr.v[1] = (iReduced+1) * nyReduced + (jReduced+1);
+            ftr.v[2] = iReduced * nyReduced + (jReduced+1);
 
             m.addFace(fbl);
             m.addFace(ftr);

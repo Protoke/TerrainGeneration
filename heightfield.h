@@ -16,7 +16,7 @@ public:
     Vec3 normal(double i, double j);
 
 
-    Mesh createMesh();
+    Mesh createMesh(int stepi = 1, int stepj = 1);
 };
 
 #endif // HEIGHTFILED_H

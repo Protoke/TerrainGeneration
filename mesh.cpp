@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include <iomanip>
 
 #include <GL/gl.h>
 
@@ -22,9 +23,9 @@ bool Mesh::saveOBJ(const QString& filename){
         return false;
     }
 
-    QTextStream stream(&file);
+    file.resize(0);
 
-    stream << "o mesh" << endl << endl;
+    QTextStream stream(&file);
 
     QVectorIterator<Vec3> itv(m_vertices);
     while(itv.hasNext()){
@@ -35,7 +36,7 @@ bool Mesh::saveOBJ(const QString& filename){
     QVectorIterator<Face> itf(m_faces);
     while(itf.hasNext()){
         Face f = itf.next();
-        stream << "f " << f.v[0] << " " << f.v[1] << " " << f.v[2] << endl;
+        stream << "f " << f.v[0]+1 << " " << f.v[1]+1 << " " << f.v[2]+1 << endl;
     }
     stream << endl;
 
