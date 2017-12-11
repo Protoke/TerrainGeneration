@@ -16,9 +16,11 @@ public:
 
     double height(double i, double j);
 
-    void thermal(const double k);
+    void thermal(const double k, const double erosion_threshold);
 
     void addSand(const double h);
+
+    void addSand(double h, int i, int j);
 
     void stabilize();
 
