@@ -25,7 +25,7 @@ Vec2 Array2::cellSize() {
 }
 
 Vec2* Array2::neighbours4(int i, int j) {
-    Vec2 neighbours[4];
+    Vec2* neighbours = new Vec2[4];
     neighbours[0] = Vec2(i+1, j);
     neighbours[1] = Vec2(i-1, j);
     neighbours[2] = Vec2(i, j+1);
@@ -34,7 +34,7 @@ Vec2* Array2::neighbours4(int i, int j) {
 }
 
 Vec2* Array2::neighbours8(int i, int j) {
-    Vec2 n8[4];
+    Vec2* n8 = new Vec2[4];;
     n8[0] = Vec2(i+1, j);
     n8[1] = Vec2(i-1, j);
     n8[2] = Vec2(i, j+1);
