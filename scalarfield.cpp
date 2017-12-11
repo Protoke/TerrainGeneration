@@ -2,6 +2,19 @@
 
 #include <stdexcept> 
 
+ScalarField::ScalarField() { }
+
+ScalarField::ScalarField(const Box2& b, int nx, int ny) :
+    Array2(b.bl, b.tr, nx, ny)
+{
+    m_h.resize((nx) * (ny));
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            m_h[index(i,j)] = 0.0;
+        }
+    }
+}
+
 void ScalarField::load(const QImage& image,
                        const Vec2& bl, const Vec2& tr,
                        double zMin, double zMax)
@@ -20,12 +33,19 @@ void ScalarField::load(const QImage& image,
     }
 }
 
-Vec3 ScalarField::point(int x, int y) {
-    return Vec3(x, y, value(x, y));
+Vec3 ScalarField::point(int i, int j) {
+    return Vec3(bl.x + (tr.x-bl.x) * i / (nx - 1),
+                bl.y + (tr.y-bl.y) * j / (ny - 1),
+                value(i, j));
 }
 
 Vec3 ScalarField::point(double x, double y) {
     return Vec3(x, y, value(x, y));
+}
+
+Vec2 ScalarField::point2(int i, int j){
+    Vec3 p = point(i, j);
+    return Vec2(p.x, p.y);
 }
 
 double ScalarField::value(int i, int j){

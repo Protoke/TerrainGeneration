@@ -11,7 +11,7 @@ AnalyticHeightField::AnalyticHeightField(double (*noiseFunction)(double,double),
     m_offsets = offsets;
 }
 
-double AnalyticHeightField::height(const Vec2 &v){
+double AnalyticHeightField::height(const Vec2 &v) const{
     double height = 0;
 
     double pow2 = 1;

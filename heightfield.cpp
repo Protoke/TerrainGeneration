@@ -1,5 +1,22 @@
 #include "heightfield.h"
 
+HeightField::HeightField() { }
+
+HeightField::HeightField(const Box2& b, int nx, int ny) :
+    ScalarField(b, nx, ny)
+{ }
+
+HeightField::HeightField(const AnalyticHeightField& a, const Box2& b,
+                              int nx, int ny) :
+    HeightField(b, nx, ny)
+{
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            m_h[index(i,j)] = a.height(point2(i,j));
+        }
+    }
+}
+
 bool HeightField::inside(const Vec3 &p){
     return p.z < value(p.x, p.y);
 }

@@ -17,7 +17,7 @@ public:
     AnalyticHeightField(double (*noiseFunction)(double,double), double A, double T,
                         QVector<double> offsets, int levels);
 
-    double height(const Vec2& v);
+    double height(const Vec2& v) const;
 
 private:
     double (*m_noiseFunction)(double,double);
