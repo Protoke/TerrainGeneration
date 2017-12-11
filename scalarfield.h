@@ -20,6 +20,7 @@ public:
     void load(const QImage& image,
               const Vec2& bl, const Vec2& tr,
               double zMin, double zMax);
+    void toImage(QImage& image);
 
     Vec3 point(int i, int j);
     Vec3 point(double x, double y);

@@ -1,6 +1,8 @@
 #include "app.h"
 #include <QtWidgets/QApplication>
 
+#include <QImage>
+
 #include "analyticheightfield.h"
 #include "heightfield.h"
 #include "mesh.h"
@@ -16,10 +18,13 @@ int main(int argc, char *argv[])
 //    a.exec();
 
     QVector<double> offsets = {0.1, 0.2, 0.9, 1.5};
-    AnalyticHeightField ahf(&noiseSin, 1, 0.01, offsets, 1);
-    HeightField hf(ahf, Box2(Vec2(-100, -100), Vec2(100, 100)), 100, 100);
+    AnalyticHeightField ahf(&noiseSin, 10, 0.1, offsets, 4);
+    HeightField hf(ahf, Box2(Vec2(-100, -100), Vec2(100, 100)), 2000, 2000);
     Mesh m = hf.createMesh();
     m.saveOBJ("../terrain.obj");
+    QImage image;
+    hf.toImage(image);
+    image.save("../terrain.jpg");
 
 //    for(int i = 0; i < 10; ++i){
 //        for(int j = 0; j < 10; ++j){

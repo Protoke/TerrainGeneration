@@ -1,6 +1,7 @@
 #include "scalarfield.h"
 
 #include <stdexcept> 
+#include <QRgb>
 
 ScalarField::ScalarField() { }
 
@@ -29,6 +30,27 @@ void ScalarField::load(const QImage& image,
         for(int j = 0; j < ny; ++j){
             m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin) / 255.0
                     + zMin;
+        }
+    }
+}
+
+void ScalarField::toImage(QImage& image){
+    float zmin = m_h[0], zmax = m_h[0];
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            float value = m_h[index(i,j)];
+            if(zmax < value)
+                zmax = value;
+            if(zmin > value)
+                zmin = value;
+        }
+    }
+
+    image = QImage(nx, ny, QImage::Format_RGB32);
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            int gray = m_h[index(i,j)] * 255.0 / (abs(zmax) - abs(zmin));
+            image.setPixel(i, j, qRgb(gray, gray, gray));
         }
     }
 }
