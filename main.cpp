@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     QImage i("../TerrainGeneration/Resources/circuit.png");
     HeightField hf;
-    hf.load(i, Vec2(0, 0), Vec2(100, 100), 0, 100);
+    hf.load(i, Vec2(0, 0), Vec2(1024, 1024), 0, 100);
     Mesh m = hf.createMesh(8,8);
     m.saveOBJ("../terrain.obj");
     QImage image;

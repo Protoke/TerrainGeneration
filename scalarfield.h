@@ -28,11 +28,10 @@ public:
 
     Vec2 range();
 
+    void setValue(int x, int y, int v);
     double value(int i, int j);
     double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR);
-
-    void setValue(int x, int y, int v);
 
 protected:
     double triangularInterpol(double x, double y);

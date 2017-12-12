@@ -24,6 +24,20 @@ Vec2 Array2::cellSize() {
                 bl.y + (tr.y - bl.y) / ny);
 }
 
+bool Array2::isInsideDomain(int i, int j){
+    if(i >= 0 && i < nx)
+        if(j >= 0 && j < ny)
+            return true;
+    return false;
+}
+
+bool Array2::isInsideDomain(double x, double y){
+    if(x >= bl.x && x <= tr.x)
+        if(y >= bl.y && y <= tr.y)
+            return true;
+    return false;
+}
+
 Vec2* Array2::neighbours4(int i, int j) {
     Vec2* neighbours = new Vec2[4];
     neighbours[0] = Vec2(i+1, j);

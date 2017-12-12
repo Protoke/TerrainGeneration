@@ -12,7 +12,12 @@ public:
 
     int index(int i, int j);
     Vec2 localCoordinates(double x, double y);
+
     Vec2 cellSize();
+
+    bool isInsideDomain(int i, int j);
+    bool isInsideDomain(double x, double y);
+
     Vec2* neighbours4(int i, int j);
     Vec2* neighbours8(int i, int j);
 

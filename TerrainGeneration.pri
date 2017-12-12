@@ -15,7 +15,8 @@ HEADERS += ./box.h \
     ./array.h \
     ./analyticheightfield.h \
     ./layerfield.h \
-    ./mesh.h
+    ./mesh.h \
+    $$PWD/triangle.h
     #./gldisplay.h
 SOURCES += ./app.cpp \
     ./box.cpp \
@@ -26,7 +27,8 @@ SOURCES += ./app.cpp \
     ./array.cpp \
     ./analyticheightfield.cpp \
     ./layerfield.cpp \
-    ./mesh.cpp
+    ./mesh.cpp \
+    $$PWD/triangle.cpp
     #./gldisplay.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc
