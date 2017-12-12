@@ -49,7 +49,7 @@ void ScalarField::toImage(QImage& image){
     image = QImage(nx, ny, QImage::Format_RGB32);
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
-            int gray = m_h[index(i,j)] * 255.0 / (abs(zmax) - abs(zmin));
+            int gray = (m_h[index(i,j)] - zmin) * 255 / (zmax - zmin);
             image.setPixel(i, j, qRgb(gray, gray, gray));
         }
     }
