@@ -26,6 +26,8 @@ public:
     Vec3 point(double x, double y);
     Vec2 point2(int i, int j);
 
+    Vec2 range();
+
     double value(int i, int j);
     double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR);

@@ -35,16 +35,9 @@ void ScalarField::load(const QImage& image,
 }
 
 void ScalarField::toImage(QImage& image){
-    float zmin = m_h[0], zmax = m_h[0];
-    for(int i = 0; i < nx; ++i){
-        for(int j = 0; j < ny; ++j){
-            float value = m_h[index(i,j)];
-            if(zmax < value)
-                zmax = value;
-            if(zmin > value)
-                zmin = value;
-        }
-    }
+    Vec2 zMinMax = range();
+    double zmin = zMinMax.x;
+    double zmax = zMinMax.y;
 
     image = QImage(nx, ny, QImage::Format_RGB32);
     for(int i = 0; i < nx; ++i){
@@ -68,6 +61,21 @@ Vec3 ScalarField::point(double x, double y) {
 Vec2 ScalarField::point2(int i, int j){
     Vec3 p = point(i, j);
     return Vec2(p.x, p.y);
+}
+
+Vec2 ScalarField::range(){
+    float zmin = m_h[0], zmax = m_h[0];
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            float value = m_h[index(i,j)];
+            if(zmax < value)
+                zmax = value;
+            if(zmin > value)
+                zmin = value;
+        }
+    }
+
+    return Vec2(zmin, zmax);
 }
 
 double ScalarField::value(int i, int j){
