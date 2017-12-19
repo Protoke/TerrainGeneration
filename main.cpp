@@ -12,10 +12,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-//	QApplication a(argc, argv);
-//	App w;
-//	w.show();
-//    a.exec();
+    QApplication a(argc, argv);
+    App w;
+    w.show();
+    a.exec();
 
 //    QVector<double> offsets = {0.1, 0.2, 0.9, 1.5};
 //    AnalyticHeightField ahf(&noiseSin, 10, 0.1, offsets, 4);
@@ -32,14 +32,14 @@ int main(int argc, char *argv[])
 //        }
 //    }
 
-    QImage i("../TerrainGeneration/Resources/circuit.png");
-    HeightField hf;
-    hf.load(i, Vec2(0, 0), Vec2(1024, 1024), 0, 100);
-    Mesh m = hf.createMesh(8,8);
-    m.saveOBJ("../terrain.obj");
-    QImage image;
-    hf.toImage(image);
-    image.save("../terrain.jpg");
+//    QImage i("../TerrainGeneration/Resources/circuit.png");
+//    HeightField hf;
+//    hf.load(i, Vec2(0, 0), Vec2(1024, 1024), 0, 100);
+//    Mesh m = hf.createMesh(8,8);
+//    m.saveOBJ("../terrain.obj");
+//    QImage image;
+//    hf.toImage(image);
+//    image.save("../terrain.jpg");
 
     return 0;
 }

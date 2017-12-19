@@ -1,4 +1,5 @@
 #include "layerfield.h"
+#include <math.h>
 
 void LayerField::load(const QImage& imageBR,
                  const QImage& imageS,
@@ -78,26 +79,46 @@ void LayerField::addSand(double h, int i, int j) {
     m_sand.setValue(i, j, m_sand.value(i, j) + h);
 }
 
-void LayerField::stabilize() {
+void LayerField::stabilize(const float percentage_landslide) {
     // TODO : CONTINUE
+
+    float stabilization_angle = tan(45.0);
 
     // parcours du terrain
     for(int i = 0;i < m_sand.nx;i++) {
         for(int j = 0;j < m_sand.ny;j++) {
 
-            Vec2 delta = m_sand.cellSize(); // largeur d'une case
+            int nb_landslides = 0;
+            QVector<Vec2> landslides_destinations;
+            float delta = m_sand.cellSize().x; // largeur d'une case
             // pour chaque voisin en 8-connexite
             Vec2* neighbours = m_sand.neighbours8(i, j);
             for(int k = 0;k < 8;k++) {
                 // stabilite = abs( h voisin - h actuel) / delta
                 Vec2 n = neighbours[k];
+                float stabilization = abs(height(i, j) - height(n.x, n.y));
                 if(k <= 3) {
                     // division par delta
+                    stabilization /= delta;
                 }else {
                     // division par 2 * racine(delta)
+                    stabilization /= 2.0f * sqrt(delta);
+                }
+                // landslide or not ?
+                if(stabilization > stabilization_angle) {
+                    nb_landslides++;
+                    landslides_destinations.push_back(n);
                 }
             }
-
+            // do landslides
+            // compute percentage of sand who falls
+            float landslide_quantity = percentage_landslide * m_sand.value(i, j) / 100.0f;
+            // delete sand of the current vertex
+            addSand(i, j, - landslide_quantity);
+            // add sand on the neighbours
+            for(Vec2 v : landslides_destinations) {
+                addSand(landslide_quantity / (float)nb_landslides);
+            }
         }
     }
 }
