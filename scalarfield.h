@@ -25,8 +25,12 @@ public:
     Vec3 point(int i, int j);
     Vec3 point(double x, double y);
     Vec2 point2(int i, int j);
+    QVector<Vec3> listOfPoints();
 
     Vec2 range();
+
+    void add(double v);
+    void add(int i, int j, double v);
 
     void setValue(int x, int y, int v);
     double value(int i, int j);

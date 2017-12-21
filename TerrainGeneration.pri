@@ -13,10 +13,11 @@ HEADERS += ./box.h \
     ./scalarfield.h \
     ./heightfield.h \
     ./array.h \
-    ./analyticheightfield.h \
+    ./analyticscalarfield.h \
     ./layerfield.h \
     ./mesh.h \
-    $$PWD/triangle.h
+    $$PWD/triangle.h \
+    $$PWD/noise.h
     #./gldisplay.h
 SOURCES += ./app.cpp \
     ./box.cpp \
@@ -25,10 +26,11 @@ SOURCES += ./app.cpp \
     ./scalarfield.cpp \
     ./heightfield.cpp \
     ./array.cpp \
-    ./analyticheightfield.cpp \
+    ./analyticscalarfield.cpp \
     ./layerfield.cpp \
     ./mesh.cpp \
-    $$PWD/triangle.cpp
+    $$PWD/triangle.cpp \
+    $$PWD/noise.cpp
     #./gldisplay.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc

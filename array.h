@@ -22,6 +22,9 @@ public:
     Vec2* neighbours8(int i, int j);
 
     int nx, ny;
+
+    static const Vec2 next[8];
+    static const double length[8];
 };
 
 #endif // ARRAY2_H
