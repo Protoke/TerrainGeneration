@@ -9,12 +9,81 @@
 
 using namespace std;
 
-bool operator== (const Face& f1, const Face& f2){
-    return f1.v[0] == f2.v[0] && f1.v[1] == f2.v[1] && f1.v[2] == f2.v[2];
-}
-
 bool Mesh::loadOBJ(const QString& filename){
-    throw std::logic_error("Not implemented");
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    QTextStream ts(&file);
+
+    m_faces.clear();
+    m_vertices.clear();
+    m_vMin = Vec3();
+    m_vMax = Vec3();
+
+    char element;
+    float x, y, z;
+    ts >> element;
+
+    while(element == '\n' || element == '#')
+        ts >> element;
+
+    // 1ere passe pour initialiser les sommets min et max
+    if(element == 'v') {
+        ts >> x;
+        ts >> y;
+        ts >> z;
+        Vec3 vertex(x, y, z);
+        m_vertices.push_back(vertex);
+        m_vMin = vertex;
+        m_vMax = vertex;
+        ts >> element;
+        while(element == '\n' || element == '#')
+            ts >> element;
+    }
+
+    while(element == 'v') {
+        ts >> x;
+        ts >> y;
+        ts >> z;
+        m_vertices.push_back(Vec3(x, y, z));
+
+        // update min/max vertices
+        if(m_vMin.x > x)
+            m_vMin.x = x;
+        if(m_vMax.x < x)
+            m_vMax.x = x;
+
+        if(m_vMin.y > y)
+            m_vMin.y = y;
+        if(m_vMax.y < y)
+            m_vMax.y = y;
+
+        if(m_vMin.z > z)
+            m_vMin.z = z;
+        if(m_vMax.z < z)
+            m_vMax.z = z;
+
+        ts >> element;
+        while(element == '\n' || element == '#')
+            ts >> element;
+    }
+
+    // TODO : lire les normales
+
+    while(element == 'f') {
+        int v1, v2, v3;
+        ts >> v1;
+        ts >> v2;
+        ts >> v3;
+        m_faces.push_back(Face(v1-1, v2-1, v3-1));
+        ts >> element;
+        while(element == '\n' || element == '#')
+            ts >> element;
+    }
+
+    file.close();
+    return true;
 }
 
 bool Mesh::saveOBJ(const QString& filename){
@@ -32,6 +101,8 @@ bool Mesh::saveOBJ(const QString& filename){
         stream << "v " << itv.next() << endl;
     }
     stream << endl;
+
+    // TODO : ecrire les normales
 
     QVectorIterator<Face> itf(m_faces);
     while(itf.hasNext()){

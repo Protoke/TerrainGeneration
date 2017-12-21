@@ -5,14 +5,7 @@
 #include <QString>
 
 #include "vec.h"
-
-// TODO : FACES
-class Face{
-public:
-    int v[3];
-};
-
-bool operator== (const Face& f1, const Face& f2);
+#include "face.h"
 
 class Mesh
 {

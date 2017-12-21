@@ -36,6 +36,16 @@ void App::on_actionNew_triggered() {
     // load file
     ui->glWidget->createTerrain(currentFile);
 
+    // display image terrain
+    QPixmap pixmapObject;
+    if(pixmapObject.load(fileName)) {
+        ui->label0->setPixmap(pixmapObject);
+        ui->label0->setScaledContents(true);
+        ui->label0->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    }else {
+        ui->label0->setText("Terrain image not found");
+    }
+
     // close file
     file.close();
 }
@@ -55,15 +65,19 @@ void App::on_actionOpen_triggered() {
         return;
     }
 
-    // load file
-    //ui->glWidget->loadFile(currentFile);
+    // load obj file
+    ui->glWidget->loadFile(currentFile);
 
     // get image terrain
     QString pathImgTerrain = infos.path() + "/" + infos.baseName() + ".jpg";
-    QPixmap pixmapObject(pathImgTerrain);
-    ui->label0->setPixmap(pixmapObject);
-    ui->label0->setScaledContents(true);
-    ui->label0->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    QPixmap pixmapObject;
+    if(pixmapObject.load(pathImgTerrain)) {
+        ui->label0->setPixmap(pixmapObject);
+        ui->label0->setScaledContents(true);
+        ui->label0->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    }else {
+        ui->label0->setText("Terrain image not found");
+    }
 
 
     // close file
