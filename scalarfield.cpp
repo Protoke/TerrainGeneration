@@ -63,6 +63,18 @@ Vec2 ScalarField::point2(int i, int j){
     return Vec2(p.x, p.y);
 }
 
+QVector<Vec3> ScalarField::listOfPoints(){
+    QVector<Vec3> points(nx * ny);
+
+    for(int i = 0; i < nx-1; ++i){
+        for(int j = 0; j < ny-1; ++j){
+            points[index(i, j)] = Vec3(i, j, value(i, j));
+        }
+    }
+
+    return points;
+}
+
 Vec2 ScalarField::range(){
     float zmin = m_h[0], zmax = m_h[0];
     for(int i = 0; i < nx; ++i){
@@ -76,6 +88,18 @@ Vec2 ScalarField::range(){
     }
 
     return Vec2(zmin, zmax);
+}
+
+void ScalarField::add(double v){
+    for(int i = 0; i < nx-1; ++i){
+        for(int j = 0; j < ny-1; ++j){
+            add(i, j, v);
+        }
+    }
+}
+
+void ScalarField::add(int i, int j, double v){
+    m_h[index(i,j)] += v;
 }
 
 void ScalarField::setValue(int i, int j, int v) {

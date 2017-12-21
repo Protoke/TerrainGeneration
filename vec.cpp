@@ -83,3 +83,7 @@ Vec3 cross(const Vec3& va, const Vec3& vb) {
 Vec3 normalize(const Vec3& v) {
     return v / v.length();
 }
+
+bool operator< (const Vec3& v1, const Vec3& v2){
+    return v1.z < v2.z;
+}

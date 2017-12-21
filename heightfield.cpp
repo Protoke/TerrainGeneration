@@ -1,18 +1,20 @@
 #include "heightfield.h"
 
+#include <iostream>
+
 HeightField::HeightField() { }
 
 HeightField::HeightField(const Box2& b, int nx, int ny) :
     ScalarField(b, nx, ny)
 { }
 
-HeightField::HeightField(const AnalyticHeightField& a, const Box2& b,
+HeightField::HeightField(const AnalyticScalarField& a, const Box2& b,
                               int nx, int ny) :
     HeightField(b, nx, ny)
 {
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
-            m_h[index(i,j)] = a.height(point2(i,j));
+            m_h[index(i,j)] = a.value(point2(i,j));
         }
     }
 }
@@ -77,13 +79,13 @@ Vec3 HeightField::normal(int i, int j){
     return normalize(n);
 }
 
-Vec3 HeightField::normal(double i, double j){
+Vec3 HeightField::normal(double x, double y){
     Vec3 n = Vec3(0.0, 0.0, 1.0);
 
     // normal interpolation
 
     // Local coordinates
-    Vec2 pLocal = localCoordinates(i, j);
+    Vec2 pLocal = localCoordinates(x, y);
 
     // Cell coordinates
     Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny));
@@ -106,6 +108,85 @@ Vec3 HeightField::normal(double i, double j){
            + (1 - pCell.y) * normal(cellX, cellY+1);
 
     return normalize(n);
+}
+
+ScalarField HeightField::drainingArea(){
+    // Init de la lsite des points dans l'ordre du plus bas au plus haut
+    QVector<Vec3> points = listOfPoints();
+    std::sort(points.begin(), points.end());
+
+    // Init du SF résultat à 1 partout
+    ScalarField sf(Box2(bl, tr), nx, ny);
+    sf.add(1.0);
+
+    // Traitement des points par ordre de hauteur décroissante
+    for(int i = points.size() - 1; i >= 0; --i){
+        Vec3 point = points[i];
+
+//        std::cout << "to dispatch : " << point << " ; ";
+
+        Vec3 q[8];
+        double h[8];
+        double s[8];
+        int n = checkFlowDirections(point, q, h, s);
+        if(n == 0)
+            continue;
+
+        // Calcul de la somme des différences de pente
+        // On peut le changer avec la hauteur
+        double totalSlope = 0.0;
+        for(int k = 0; k < n; ++k){
+            totalSlope += s[k];
+        }
+
+        // Dispatch sur les voisins avec une fraction dépendant de la pente
+        // (ou hauteur)
+        double toDispatch = sf.value(int(point.x), int(point.y));
+        double maxSlope = 0;
+        int maxPoint;
+        for(int k = 0; k < n; ++k){
+//            sf.add(q[k].x, q[k].y, toDispatch * s[k] / totalSlope);
+            if(s[k] > maxSlope){
+                maxSlope = s[k];
+                maxPoint = k;
+            }
+        }
+
+//        std::cout << "Point " << q[maxPoint] << " : ";
+//        std::cout << "OldValue : " <<
+//                     sf.value(int(q[maxPoint].x),
+//                              int(q[maxPoint].y)) << "; ";
+//        sf.add(int(q[maxPoint].x), int(q[maxPoint].y), toDispatch);
+//        std::cout << "NewValue : " <<
+//                     sf.value(int(q[maxPoint].x),
+//                              int(q[maxPoint].y)) << std::endl;
+    }
+
+    return sf;
+}
+
+int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
+                                     double* dumpHeight, double* dumpSlope)
+{
+    int n = 0;
+    Vec2 a = Vec2(p);
+
+    for(int i = 0; i < 8; ++i){
+        Vec2 b = a + next[i];
+        if(!isInsideDomain(int(b.x), int(b.y)))
+            continue;
+
+        Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
+        double diff = q.z - p.z;
+        if(diff < 0.0){
+            dumpPoints[n] = q;
+            dumpHeight[n] = diff;
+            dumpSlope[n] = diff / length[i];
+            n++;
+        }
+    }
+
+    return n;
 }
 
 Mesh HeightField::createMesh(int stepi, int stepj){

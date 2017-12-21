@@ -3,7 +3,7 @@
 
 #include <QImage>
 
-#include "analyticheightfield.h"
+#include "analyticscalarfield.h"
 #include "heightfield.h"
 #include "mesh.h"
 #include "iostream"
@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
     w.show();
     a.exec();
 
-//    QVector<double> offsets = {0.1, 0.2, 0.9, 1.5};
-//    AnalyticHeightField ahf(&noiseSin, 10, 0.1, offsets, 4);
-//    HeightField hf(ahf, Box2(Vec2(-100, -100), Vec2(100, 100)), 1000, 1000);
+//    QVector<double> offsets = {1, 10, 100, 1000};
+//    AnalyticScalarField asf(new SimplexNoise(), 1, 0.1, offsets, 10);
+//    HeightField hf(asf, Box2(Vec2(0, 0), Vec2(20, 20)), 1000, 1000);
 //    Mesh m = hf.createMesh();
-//    m.saveOBJ("../terrain.obj");
+//    m.saveOBJ("../terrainNoise.obj");
 //    QImage image;
 //    hf.toImage(image);
-//    image.save("../terrain.jpg");
+//    image.save("../terrainNoise.jpg");
 
 //    for(int i = 0; i < 10; ++i){
 //        for(int j = 0; j < 10; ++j){
@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
 //    QImage image;
 //    hf.toImage(image);
 //    image.save("../terrain.jpg");
+//    ScalarField drainingArea = hf.drainingArea();
+//    drainingArea.toImage(image);
+//    image.save("../drain.jpg");
 
     return 0;
 }

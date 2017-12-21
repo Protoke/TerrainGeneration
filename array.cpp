@@ -1,5 +1,29 @@
 #include "array.h"
 
+#include <qmath.h>
+
+const Vec2 Array2::next[8]= {
+    Vec2(-1, 0),
+    Vec2(-1, -1),
+    Vec2(0, -1),
+    Vec2(1, -1),
+    Vec2(1, 0),
+    Vec2(1, 1),
+    Vec2(0, 1),
+    Vec2(-1, 1)
+};
+
+const double Array2::length[8] = {
+    1.0,
+    qSqrt(2),
+    1.0,
+    qSqrt(2),
+    1.0,
+    qSqrt(2),
+    1.0,
+    qSqrt(2)
+};
+
 Array2::Array2() { }
 
 Array2::Array2(const Vec2 &bl, const Vec2 &tr, int nx, int ny) :
@@ -25,8 +49,8 @@ Vec2 Array2::cellSize() {
 }
 
 bool Array2::isInsideDomain(int i, int j){
-    if(i >= 0 && i < nx)
-        if(j >= 0 && j < ny)
+    if(i >= 0 && i < nx-1)
+        if(j >= 0 && j < ny-1)
             return true;
     return false;
 }

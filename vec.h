@@ -52,6 +52,11 @@ Vec3 operator/ (const Vec3& v, double d);
 bool operator== (const Vec2& v1, const Vec2& v2);
 bool operator== (const Vec3& v1, const Vec3& v2);
 
+inline ostream& operator<<(ostream& os, const Vec2& v)
+{
+    os << v.x << ' ' << v.y;
+    return os;
+}
 inline ostream& operator<<(ostream& os, const Vec3& v)
 {
     os << v.x << ' ' << v.y << ' ' << v.z;
@@ -67,3 +72,6 @@ double dot(const Vec3& va, const Vec3& vb);
 Vec3 cross(const Vec3& va, const Vec3& vb);
 
 Vec3 normalize(const Vec3& v);
+
+// Comparaison en z seulement !
+bool operator< (const Vec3& v1, const Vec3& v2);
