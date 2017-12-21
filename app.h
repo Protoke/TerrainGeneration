@@ -7,6 +7,7 @@
 #include "ui_app.h"
 #include <QString>
 #include <QTextStream>
+#include "dialognew.h"
 
 namespace Ui {
 class App;
@@ -33,6 +34,7 @@ private slots:
 private:
     Ui::App *ui;
     QString currentFile;
+    DialogNew *dialogNew;
 };
 
 #endif // APP_H

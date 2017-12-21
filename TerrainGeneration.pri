@@ -18,7 +18,8 @@ HEADERS += ./box.h \
     ./mesh.h \
     ./gldisplay.h \
     ./face.h \
-    ./noise.h
+    ./noise.h \
+    ./dialognew.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
@@ -31,7 +32,8 @@ SOURCES += ./app.cpp \
     ./mesh.cpp \
     ./gldisplay.cpp \
     ./face.cpp \
-    ./triangle.cpp \
-    ./noise.cpp
+    ./noise.cpp \
+    ./dialognew.cpp
 FORMS += ./app.ui
+FORMS += ./dialognew.ui
 RESOURCES += app.qrc

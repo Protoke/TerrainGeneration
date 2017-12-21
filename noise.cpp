@@ -1,4 +1,5 @@
 #include "noise.h"
+#include <qmath.h>
 
 /***** Generic class Noise *****/
 
@@ -59,7 +60,7 @@ double SimplexNoise::value(const Vec2& p) const{
     double n[3] = { 0.0, 0.0, 0.0 };
 
     // Skew the input space to determine which simplex cell we are in
-    const double F2 = 0.5 * (sqrt(3.0) - 1.0);
+    const double F2 = 0.5 * (qSqrt(3.0) - 1.0);
 
     // Hairy factor for 2D
     double s = (x + y) * F2;
@@ -67,7 +68,7 @@ double SimplexNoise::value(const Vec2& p) const{
     int i = integer(x + s);
     int j = integer(y + s);
 
-    const double G2 = (3.0 - sqrt(3.0)) / 6.0;
+    const double G2 = (3.0 - qSqrt(3.0)) / 6.0;
     double t = (i + j) * G2;
 
     // Unskew the cell origin back to (x,y) space

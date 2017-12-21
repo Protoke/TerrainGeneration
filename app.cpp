@@ -8,6 +8,7 @@ App::App(QWidget *parent)
       currentFile("")
 {
     ui->setupUi(this);
+    dialogNew = new DialogNew(this);
 
     // buttons connections
     connect(ui->buttonDisplayMode, SIGNAL(clicked()), this, SLOT(on_buttonDisplayMode_clicked()), Qt::UniqueConnection);
@@ -33,7 +34,8 @@ void App::on_actionNew_triggered() {
         return;
     }
 
-    // load file
+    // open a dialog to parametize and load the file
+    dialogNew->show();
     ui->glWidget->createTerrain(currentFile);
 
     // display image terrain
