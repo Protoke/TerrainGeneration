@@ -22,7 +22,7 @@ public:
 
     void addSand(double h, int i, int j);
 
-    void stabilize();
+    void stabilize(const float percentage_landslide);
 
 private:
     ScalarField m_bedrock;

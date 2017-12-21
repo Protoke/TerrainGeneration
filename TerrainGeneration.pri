@@ -17,8 +17,8 @@ HEADERS += ./box.h \
     ./layerfield.h \
     ./mesh.h \
     $$PWD/triangle.h \
-    $$PWD/noise.h
-    #./gldisplay.h
+    $$PWD/noise.h \
+    $$PWD/gldisplay.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
@@ -30,7 +30,7 @@ SOURCES += ./app.cpp \
     ./layerfield.cpp \
     ./mesh.cpp \
     $$PWD/triangle.cpp \
-    $$PWD/noise.cpp
-    #./gldisplay.cpp
+    $$PWD/noise.cpp \
+    $$PWD/gldisplay.cpp
 FORMS += ./app.ui
 RESOURCES += app.qrc

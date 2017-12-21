@@ -23,17 +23,22 @@ public:
     int getId(const Vec3& p);
     int getId(const Face& f);
     Vec3& vertex(int id);
+    Vec3& vertex(int idFace, int idInFace);
     Face& face(int id);
     int nbVertices();
     int nbFaces();
     void addVertex(const Vec3& v);
     void addFace(const Face& f);
+    void setMax(Vec3 vertex);
+    void setMin(Vec3 vertex);
 
     void draw();
 
 private:
     QVector<Face> m_faces;
     QVector<Vec3> m_vertices;
+    Vec3 m_vMin;
+    Vec3 m_vMax;
 };
 
 #endif // MESH_H

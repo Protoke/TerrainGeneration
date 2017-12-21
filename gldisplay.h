@@ -4,7 +4,6 @@
 #include <QGLWidget>
 #include <QMouseEvent>
 #include <QTextStream>
-
 #include "mesh.h"
 
 class GLDisplay : public QGLWidget
@@ -21,28 +20,31 @@ public:
 
     void changeDisplayMode();
 
-    void loadFile(QTextStream& file);
+    void createTerrain(const QString& filename);
 
-//    void saveAs(QTextStream& out);
+    void loadFile(const QString& filename);
 
-//    void reset();
+    void saveAs(const QString& filename);
+
+    void reset();
 
 protected:
     virtual void mouseMoveEvent ( QMouseEvent * event );
     virtual void mousePressEvent ( QMouseEvent * event );
 
 private:
-    Mesh m_mesh;
-    unsigned int m_display_mode;
+    //void drawSierpinski();
+    unsigned int _display_mode;
 
-    float m_angleX;
-    float m_angleY;
-    QPoint m_position;
-    
+    float _angleX;
+    float _angleY;
+    QPoint _position;
+    Mesh _mesh;
+
 signals:
-    
+
 public slots:
-    
+
 };
 
 #endif // GLDISPLAY_H

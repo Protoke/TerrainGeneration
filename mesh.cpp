@@ -63,6 +63,13 @@ Vec3& Mesh::vertex(int id){
     return m_vertices[id];
 }
 
+Vec3& Mesh::vertex(int idFace, int idInFace) {
+    if(idFace < 0 || idFace > nbFaces()-1 || idInFace < 0 || idInFace > 2) {
+        throw std::invalid_argument("Id incorrect");
+    }
+    return m_vertices[m_faces[idFace].v[idInFace]];
+}
+
 Face& Mesh::face(int id){
     return m_faces[id];
 }
@@ -83,20 +90,38 @@ void Mesh::addFace(const Face& f){
     m_faces.push_back(f);
 }
 
+void Mesh::setMax(Vec3 vertex) {
+    m_vMax = vertex;
+}
+
+void Mesh::setMin(Vec3 vertex) {
+    m_vMin = vertex;
+}
+
 void Mesh::draw(){
     glLineWidth(1.0);
+    glColor3f(0.0, 1.0, 0.0);
     glBegin(GL_TRIANGLES);
+
+        // vertices normalization between -minCible and maxCible
+        // (originale - MIN) * (maxCible - minCible) / (MAX - MIN) + minCible
+
+        // dezoome
+        Vec3 min(-0.8f, -0.8f, -0.8f);
+        Vec3 max(0.8f, 0.8f, 0.8f);
+
          for(int i = 0;i < m_faces.length();i++) {
-             glVertex3f(m_vertices[m_faces[i].v[0]].x,
-                        m_vertices[m_faces[i].v[0]].y,
-                        m_vertices[m_faces[i].v[0]].z);
-             glVertex3f(m_vertices[m_faces[i].v[1]].x,
-                        m_vertices[m_faces[i].v[1]].y,
-                        m_vertices[m_faces[i].v[1]].z);
-             glVertex3f(m_vertices[m_faces[i].v[2]].x,
-                        m_vertices[m_faces[i].v[2]].y,
-                        m_vertices[m_faces[i].v[2]].z);
+             glVertex3f((vertex(i, 0).x - m_vMin.x) * (max.x - min.x) / (m_vMax.x - m_vMin.x) + min.x,
+                        (vertex(i, 0).y - m_vMin.y) * (max.y - min.y) / (m_vMax.y - m_vMin.y) + min.y,
+                        (vertex(i, 0).z - m_vMin.z) * (max.z - min.z) / (m_vMax.z - m_vMin.z) + min.z);
+             glVertex3f((vertex(i, 1).x - m_vMin.x) * (max.x - min.x) / (m_vMax.x - m_vMin.x) + min.x,
+                        (vertex(i, 1).y - m_vMin.y) * (max.y - min.y) / (m_vMax.y - m_vMin.y) + min.y,
+                        (vertex(i, 1).z - m_vMin.z) * (max.z - min.z) / (m_vMax.z - m_vMin.z) + min.z);
+             glVertex3f((vertex(i, 2).x - m_vMin.x) * (max.x - min.x) / (m_vMax.x - m_vMin.x) + min.x,
+                        (vertex(i, 2).y - m_vMin.y) * (max.y - min.y) / (m_vMax.y - m_vMin.y) + min.y,
+                        (vertex(i, 2).z - m_vMin.z) * (max.z - min.z) / (m_vMax.z - m_vMin.z) + min.z);
          }
+
     glEnd();
 }
 

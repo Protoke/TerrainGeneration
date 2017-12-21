@@ -192,6 +192,17 @@ int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
 Mesh HeightField::createMesh(int stepi, int stepj){
     Mesh m;
 
+    // stockage des points min et max du terrain
+    Vec2 zMinMax = range();
+    // min
+    Vec3 p = point(0,0);
+    p.z = zMinMax.x;
+    m.setMin(p);
+    // max
+    p = point(nx-1, ny-1);
+    p.z = zMinMax.y;
+    m.setMax(p);
+
     for(int i = 0; i < nx; i+=stepi){
         for(int j = 0; j < ny; j+=stepj){
             m.addVertex(point(i,j));

@@ -12,19 +12,19 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-//	QApplication a(argc, argv);
-//	App w;
-//	w.show();
-//    a.exec();
+    QApplication a(argc, argv);
+    App w;
+    w.show();
+    a.exec();
 
-    QVector<double> offsets = {1, 10, 100, 1000};
-    AnalyticScalarField asf(new SimplexNoise(), 1, 0.1, offsets, 10);
-    HeightField hf(asf, Box2(Vec2(0, 0), Vec2(20, 20)), 1000, 1000);
-    Mesh m = hf.createMesh();
-    m.saveOBJ("../terrainNoise.obj");
-    QImage image;
-    hf.toImage(image);
-    image.save("../terrainNoise.jpg");
+//    QVector<double> offsets = {1, 10, 100, 1000};
+//    AnalyticScalarField asf(new SimplexNoise(), 1, 0.1, offsets, 10);
+//    HeightField hf(asf, Box2(Vec2(0, 0), Vec2(20, 20)), 1000, 1000);
+//    Mesh m = hf.createMesh();
+//    m.saveOBJ("../terrainNoise.obj");
+//    QImage image;
+//    hf.toImage(image);
+//    image.save("../terrainNoise.jpg");
 
 //    for(int i = 0; i < 10; ++i){
 //        for(int j = 0; j < 10; ++j){
