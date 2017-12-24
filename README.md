@@ -1,2 +1,2 @@
 # TerrainGeneration
-Student project - procedural terrain with vegetation modelisation and generation
+Procedural modelisation and generation of terrain with vegetation
