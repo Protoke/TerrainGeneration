@@ -19,6 +19,9 @@ public:
     Vec3 normal(double x, double y);
 
     ScalarField drainingArea();
+    ScalarField slope();
+    ScalarField streamPower();
+    ScalarField access();
     int checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
                             double* dumpHeight, double* dumpSlope);
 

@@ -49,8 +49,8 @@ Vec2 Array2::cellSize() {
 }
 
 bool Array2::isInsideDomain(int i, int j){
-    if(i >= 0 && i < nx-1)
-        if(j >= 0 && j < ny-1)
+    if(i >= 0 && i < nx)
+        if(j >= 0 && j < ny)
             return true;
     return false;
 }

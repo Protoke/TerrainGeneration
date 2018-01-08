@@ -12,10 +12,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    App w;
-    w.show();
-    a.exec();
+//    QApplication a(argc, argv);
+//    App w;
+//    w.show();
+//    a.exec();
 
 //    QVector<double> offsets = {1, 10, 100, 1000};
 //    AnalyticScalarField asf(new SimplexNoise(), 1, 0.1, offsets, 10);
@@ -32,17 +32,21 @@ int main(int argc, char *argv[])
 //        }
 //    }
 
-//    QImage i("../TerrainGeneration/Resources/circuit.png");
-//    HeightField hf;
-//    hf.load(i, Vec2(0, 0), Vec2(1024, 1024), 0, 100);
-//    Mesh m = hf.createMesh(8,8);
-//    m.saveOBJ("../terrain.obj");
-//    QImage image;
-//    hf.toImage(image);
-//    image.save("../terrain.jpg");
-//    ScalarField drainingArea = hf.drainingArea();
-//    drainingArea.toImage(image);
-//    image.save("../drain.jpg");
+    QImage i("../TerrainGeneration/Resources/circuit.png");
+//    QImage i("../TerrainGeneration/Resources/test3.png");
+    HeightField hf;
+    hf.load(i, Vec2(0, 0), Vec2(100, 100), 0, 100);
+    Mesh m = hf.createMesh();
+    m.saveOBJ("../terrain.obj");
+    QImage image;
+    hf.toImage(image);
+    image.save("../terrain.jpg");
+    ScalarField drainingArea = hf.drainingArea();
+    drainingArea.toImage(image);
+    image.save("../drain.jpg");
+    ScalarField slope = hf.slope();
+    slope.toImage(image);
+    image.save("../slope.jpg");
 
     return 0;
 }

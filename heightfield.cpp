@@ -123,8 +123,6 @@ ScalarField HeightField::drainingArea(){
     for(int i = points.size() - 1; i >= 0; --i){
         Vec3 point = points[i];
 
-//        std::cout << "to dispatch : " << point << " ; ";
-
         Vec3 q[8];
         double h[8];
         double s[8];
@@ -145,24 +143,75 @@ ScalarField HeightField::drainingArea(){
         double maxSlope = 0;
         int maxPoint;
         for(int k = 0; k < n; ++k){
-//            sf.add(q[k].x, q[k].y, toDispatch * s[k] / totalSlope);
-            if(s[k] > maxSlope){
-                maxSlope = s[k];
-                maxPoint = k;
-            }
+
+            // Répartition équitable sur les voisins
+            double coeff = 0.0;
+            if(totalSlope == 0.0)
+                coeff = 1.0 / (double)n;
+            else
+                coeff = s[k] / totalSlope;
+            sf.add(q[k].x, q[k].y, toDispatch * coeff);
+
+            // Répartition sur le voisin avec la plus grande pente
+//            if(s[k] <= maxSlope){
+//                maxSlope = s[k];
+//                maxPoint = k;
+//            }
         }
 
-//        std::cout << "Point " << q[maxPoint] << " : ";
-//        std::cout << "OldValue : " <<
-//                     sf.value(int(q[maxPoint].x),
-//                              int(q[maxPoint].y)) << "; ";
+        // Répartition sur le voisin avec la plus grande pente (bis)
 //        sf.add(int(q[maxPoint].x), int(q[maxPoint].y), toDispatch);
-//        std::cout << "NewValue : " <<
-//                     sf.value(int(q[maxPoint].x),
-//                              int(q[maxPoint].y)) << std::endl;
     }
 
     return sf;
+}
+
+ScalarField HeightField::slope(){
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            // Récupération du point courant
+            Vec3 p = Vec3(i, j, value(i, j));
+
+            int n = 0;
+            double slope[8];
+            // Parcours de tous les voisins pour récupérer la pente
+            for(int i = 0; i < 8; ++i){
+                Vec2 b = Vec2(p) + next[i];
+
+                // Vérification de non débordement avant de récupérer le voisin
+                if(!isInsideDomain(int(b.x), int(b.y)))
+                    continue;
+
+                Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
+                double diff = q.z - p.z;
+                slope[n] = diff / length[i];
+                n++;
+            }
+
+            // Parcours des pentes trouvées pour traitement
+            // Ici on prend la plus grande, mais on pourrait faire une "moyenne"
+            double maxSlope = 0;
+            for(int i = 0; i < n; ++i){
+                if(qFabs(slope[i]) >= qFabs(maxSlope)){
+                    maxSlope = slope[i];
+                }
+            }
+
+            sf.setValue(i, j, maxSlope);
+        }
+    }
+
+    return sf;
+}
+
+ScalarField HeightField::streamPower(){
+
+}
+
+ScalarField HeightField::access(){
+
 }
 
 int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
@@ -171,14 +220,19 @@ int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
     int n = 0;
     Vec2 a = Vec2(p);
 
+    // Parcours de tous les voisins
     for(int i = 0; i < 8; ++i){
         Vec2 b = a + next[i];
+
+        // Vérification de non débordement avant de récupérer le voisin
         if(!isInsideDomain(int(b.x), int(b.y)))
             continue;
 
         Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
         double diff = q.z - p.z;
-        if(diff < 0.0){
+
+        // Vérification d'une pente descendante
+        if(diff <= 0.0){
             dumpPoints[n] = q;
             dumpHeight[n] = diff;
             dumpSlope[n] = diff / length[i];
