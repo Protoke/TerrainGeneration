@@ -38,7 +38,9 @@ public:
     double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR) const;
 
+    Vec2 gradient(int i, int j) const;
     Vec2Field gradient() const;
+    ScalarField gradientNorm() const;
 
     void display() const;
 

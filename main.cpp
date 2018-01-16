@@ -53,8 +53,9 @@ int main(int argc, char *argv[])
     ScalarField wetnessIndex = hf.wetnessIndex();
     wetnessIndex.toImage(image);
     image.save("../wetnessIndex.jpg");
-    Vec2Field gradient = hf.gradient();
-    gradient.display();
+    ScalarField gradient = hf.gradientNorm();
+    gradient.toImage(image);
+    image.save("../gradientNorm.jpg");
 
     return 0;
 }
