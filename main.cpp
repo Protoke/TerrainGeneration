@@ -2,11 +2,12 @@
 #include <QtWidgets/QApplication>
 
 #include <QImage>
+#include <iostream>
 
 #include "analyticscalarfield.h"
 #include "heightfield.h"
 #include "mesh.h"
-#include "iostream"
+#include "layerfield.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
 //    }
 
 //    QImage i("../TerrainGeneration/Resources/circuit.png");
+    /*
     QImage i("../TerrainGeneration/Resources/test2.png");
     HeightField hf;
     hf.load(i, Vec2(0, 0), Vec2(100, 100), 0, 100);
@@ -55,6 +57,25 @@ int main(int argc, char *argv[])
     image.save("../wetnessIndex.jpg");
     Vec2Field gradient = hf.gradient();
     gradient.display();
+    */
+
+    // TEST LAYERFIELD
+    QImage imageBR("../TerrainGeneration/Resources/test3.png");
+    LayerField lf;
+    lf.load(imageBR, Vec2(0,0), Vec2(100,100), 0, 100);
+
+    lf.thermal(1.0, 0.0);
+    //lf.addSand(10);
+
+    QImage BR;
+    lf.bedrock().toImage(BR);
+    BR.save("../BR.jpg");
+    lf.bedrock().display();
+    cout << endl;
+    QImage SD;
+    lf.sand().toImage(SD);
+    SD.save("../SD.jpg");
+    lf.sand().display();
 
     return 0;
 }

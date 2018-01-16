@@ -13,6 +13,14 @@ void LayerField::load(const QImage& imageBR,
     m_sand.load(imageS, bl, tr, 0, thickness_S);
 }
 
+void LayerField::load (const QImage& imageBR,
+                       const Vec2& bl, const Vec2& tr,
+                       double zMinBR, double zMaxBR) {
+    m_bedrock = ScalarField();
+    m_bedrock.load(imageBR, bl, tr, zMinBR, zMaxBR);
+    m_sand = ScalarField(Box2(bl, tr), imageBR.width(), imageBR.height());
+}
+
 double LayerField::height(int i, int j) const {
     double h_bedrock = m_bedrock.value(i,j);
     double h_sand = m_sand.value(i,j);
@@ -32,7 +40,10 @@ void LayerField::thermal(double k, double erosion_threshold) {
 
     // TODO : gerer les cases en bordures pour l'erosion
 
-    // pour chaque case de la grille sauf les bords
+    // Stress Map
+    ScalarField stressMap(Box2(m_bedrock.bl, m_bedrock.tr), m_bedrock.nx, m_bedrock.ny);
+
+    // calcul du stress pour chaque case de la grille sauf les bords
     for(int i = 1;i < m_bedrock.nx - 1;i++) {
         for(int j = 1; j < m_bedrock.ny - 1;j++) {
 
@@ -40,19 +51,33 @@ void LayerField::thermal(double k, double erosion_threshold) {
             // delta_h = moyenne des 4 variations de hauteurs
             // en verifiant que le voisin n'est pas plus grand
             // (on prend le max entre 0 et la difference de hauteur avec le voisin)
-            double delta_h = ( max(m_bedrock.value(i,j) - height(i, j+1), 0.0) +
-                               max(m_bedrock.value(i,j) - height(i, j-1), 0.0) +
-                               max(m_bedrock.value(i,j) - height(i+1 , j), 0.0) +
-                               max(m_bedrock.value(i,j) - height(i-1, j), 0.0 ) )
+            double value = m_bedrock.value(i,j);
+            double delta_h = ( max(value - height(i, j+1), 0.0) +
+                               max(value - height(i, j-1), 0.0) +
+                               max(value - height(i+1 , j), 0.0) +
+                               max(value - height(i-1, j), 0.0 ) )
                               / 4.0 ;
-            // on verifie que la moyennes des differences de hauteurs est superieure > seuil
+            // on verifie que la moyennes des differences de hauteurs est superieure au seuil
             if(delta_h > erosion_threshold) {
                 // quantite de bedrock a transformer en sable
                 double stress = k * (delta_h - erosion_threshold);
-                m_bedrock.setValue(i, j, m_bedrock.value(i,j) - stress);
-                addSand(i, j, stress);
+                stressMap.setValue(i, j, stress);
             }
 
+        }
+    }
+
+    // calcul du stress pour les coins
+
+
+    // erosion en fonction du stress
+    for(int i = 1;i < m_bedrock.nx - 1;i++) {
+        for(int j = 1; j < m_bedrock.ny - 1;j++) {
+            double stress = stressMap.value(i, j);
+            if(stress > 0.0) {
+                m_bedrock.setValue(i, j, m_bedrock.value(i,j) - stress);
+                addSand(stress, i, j);
+            }
         }
     }
 }
@@ -73,7 +98,7 @@ void LayerField::addSand(double h, int i, int j) {
     if(h <= 0.0) {
         throw std::invalid_argument("impossible to add a negative or null value of sand");
     }
-    if(i >= 0 && i < m_sand.nx && j >= 0 && j < m_sand.ny) {
+    if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
         throw std::invalid_argument("invalid cell coordinates");
     }
     m_sand.setValue(i, j, m_sand.value(i, j) + h);
@@ -121,4 +146,12 @@ void LayerField::stabilize(const float percentage_landslide) {
             }
         }
     }
+}
+
+ScalarField LayerField::bedrock() {
+    return m_bedrock;
+}
+
+ScalarField LayerField::sand() {
+    return m_sand;
 }
