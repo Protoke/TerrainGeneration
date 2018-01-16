@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     ScalarField drainingArea = hf.drainingArea();
     drainingArea.toImage(image);
     image.save("../drain.jpg");
-    ScalarField slope = hf.slope();
+    ScalarField slope = hf.slope().length();
     slope.toImage(image);
     image.save("../slope.jpg");
     ScalarField streamPower = hf.streamPower();

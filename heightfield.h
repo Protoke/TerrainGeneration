@@ -19,7 +19,7 @@ public:
     Vec3 normal(double x, double y) const;
 
     ScalarField drainingArea() const;
-    ScalarField slope() const;
+    Vec2Field slope() const;
     ScalarField streamPower() const;
     ScalarField access() const;
     ScalarField wetnessIndex() const;

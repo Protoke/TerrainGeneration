@@ -7,6 +7,8 @@
 #include "array.h"
 #include "vecfield.h"
 
+class Vec2Field;
+
 class ScalarField : public Array2 {
 public:
 	enum interpolationType {
