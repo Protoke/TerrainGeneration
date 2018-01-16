@@ -35,3 +35,15 @@ void Vec2Field::display() const {
         std::cout << endl;
     }
 }
+
+ScalarField Vec2Field::length() const {
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            sf.setValue(i, j, value(i, j).length());
+        }
+    }
+
+    return sf;
+}

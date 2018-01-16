@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     ScalarField drainingArea = hf.drainingArea();
     drainingArea.toImage(image);
     image.save("../drain.jpg");
-    ScalarField slope = hf.slope();
+    ScalarField slope = hf.slope().length();
     slope.toImage(image);
     image.save("../slope.jpg");
     ScalarField streamPower = hf.streamPower();
@@ -55,8 +55,9 @@ int main(int argc, char *argv[])
     ScalarField wetnessIndex = hf.wetnessIndex();
     wetnessIndex.toImage(image);
     image.save("../wetnessIndex.jpg");
-    Vec2Field gradient = hf.gradient();
-    gradient.display();
+    ScalarField gradient = hf.gradientNorm();
+    gradient.toImage(image);
+    image.save("../gradientNorm.jpg");
     */
 
     // TEST LAYERFIELD

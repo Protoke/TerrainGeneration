@@ -160,49 +160,13 @@ ScalarField HeightField::drainingArea() const {
     return sf;
 }
 
-ScalarField HeightField::slope() const {
-    ScalarField sf(Box2(bl, tr), nx, ny);
-
-    for(int i = 0; i < nx; ++i){
-        for(int j = 0; j < ny; ++j){
-            // Récupération du point courant
-            Vec3 p = Vec3(i, j, value(i, j));
-
-            int n = 0;
-            double slope[8];
-            // Parcours de tous les voisins pour récupérer la pente
-            for(int i = 0; i < 8; ++i){
-                Vec2 b = Vec2(p) + next[i];
-
-                // Vérification de non débordement avant de récupérer le voisin
-                if(!isInsideDomain(int(b.x), int(b.y)))
-                    continue;
-
-                Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
-                double diff = q.z - p.z;
-                slope[n] = diff / length[i];
-                n++;
-            }
-
-            // Parcours des pentes trouvées pour traitement
-            // Ici on prend la plus grande, mais on pourrait faire une "moyenne"
-            double maxSlope = 0;
-            for(int i = 0; i < n; ++i){
-                if(qFabs(slope[i]) >= qFabs(maxSlope)){
-                    maxSlope = slope[i];
-                }
-            }
-
-            sf.setValue(i, j, maxSlope);
-        }
-    }
-
-    return sf;
+Vec2Field HeightField::slope() const {
+    return gradient();
 }
 
 ScalarField HeightField::streamPower() const {
     ScalarField A = drainingArea();
-    ScalarField s = slope();
+    ScalarField s = slope().length();
 
     ScalarField sf(Box2(bl, tr), nx, ny);
 
@@ -220,7 +184,7 @@ ScalarField HeightField::access() const {
 
 ScalarField HeightField::wetnessIndex() const {
     ScalarField A = drainingArea();
-    ScalarField s = slope();
+    ScalarField s = slope().length();
 
     ScalarField sf(Box2(bl, tr), nx, ny);
 

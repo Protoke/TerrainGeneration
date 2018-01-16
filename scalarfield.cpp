@@ -155,35 +155,53 @@ double ScalarField::bicubicInterpol(double x, double y) const {
     return 0.0;
 }
 
+Vec2 ScalarField::gradient(int i, int j) const {
+    Vec3 p = Vec3(i, j, value(i, j));
+    Vec2 grad;
+
+    // Parcours de tous les voisins
+    for(int i = 0; i < 8; ++i){
+
+        Vec2 b = Vec2(p) + next[i];
+
+        // Vérification de non débordement avant de récupérer le voisin
+        if(!isInsideDomain(int(b.x), int(b.y)))
+            continue;
+
+        // Calcul de la pente
+        Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
+        double diff = q.z - p.z;
+        grad = grad + normalize(next[i]) * diff / length[i];
+    }
+
+    return grad;
+}
+
 Vec2Field ScalarField::gradient() const {
     Vec2Field vf(Box2(bl, tr), nx, ny);
 
     for(int i = 0; i < nx; ++i)
     for(int j = 0; j < ny; ++j){
-        // Point courant et gradient courant
-        Vec3 p = point(i, j);
-        Vec2 grad = Vec2(0.0, 0.0);
-
-        // Parcours de tous les voisins
-        for(int i = 0; i < 8; ++i){
-
-            Vec2 b = Vec2(p) + next[i];
-
-            // Vérification de non débordement avant de récupérer le voisin
-            if(!isInsideDomain(int(b.x), int(b.y)))
-                continue;
-
-            // Calcul de la pente
-            Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
-            double diff = q.z - p.z;
-            grad = grad + normalize(next[i]) * diff / length[i];
-        }
-
-        std::cout << "set " << grad << endl;
+        Vec2 grad = gradient(i, j);
         vf.setValue(i, j, grad);
     }
 
     return vf;
+}
+
+ScalarField ScalarField::gradientNorm() const {
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    Vec2Field vf;
+    vf = gradient();
+
+    for(int i = 0; i < nx; ++i)
+    for(int j = 0; j < ny; ++j){
+        Vec2 grad = vf.value(i, j);
+        sf.setValue(i, j, grad.length());
+    }
+
+    return sf;
 }
 
 void ScalarField::display() const {
