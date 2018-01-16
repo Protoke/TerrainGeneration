@@ -34,7 +34,7 @@ void ScalarField::load(const QImage& image,
     }
 }
 
-void ScalarField::toImage(QImage& image){
+void ScalarField::toImage(QImage& image) const {
     Vec2 zMinMax = range();
     double zmin = zMinMax.x;
     double zmax = zMinMax.y;
@@ -48,22 +48,22 @@ void ScalarField::toImage(QImage& image){
     }
 }
 
-Vec3 ScalarField::point(int i, int j) {
+Vec3 ScalarField::point(int i, int j) const {
     return Vec3(bl.x + (tr.x-bl.x) * i / (nx - 1),
                 bl.y + (tr.y-bl.y) * j / (ny - 1),
                 value(i, j));
 }
 
-Vec3 ScalarField::point(double x, double y) {
+Vec3 ScalarField::point(double x, double y) const {
     return Vec3(x, y, value(x, y));
 }
 
-Vec2 ScalarField::point2(int i, int j){
+Vec2 ScalarField::point2(int i, int j) const {
     Vec3 p = point(i, j);
     return Vec2(p.x, p.y);
 }
 
-QVector<Vec3> ScalarField::listOfPoints(){
+QVector<Vec3> ScalarField::listOfPoints() const {
     QVector<Vec3> points(nx * ny);
 
     for(int i = 0; i < nx-1; ++i){
@@ -75,7 +75,7 @@ QVector<Vec3> ScalarField::listOfPoints(){
     return points;
 }
 
-Vec2 ScalarField::range(){
+Vec2 ScalarField::range() const {
     float zmin = m_h[0], zmax = m_h[0];
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
@@ -91,8 +91,8 @@ Vec2 ScalarField::range(){
 }
 
 void ScalarField::add(double v){
-    for(int i = 0; i < nx-1; ++i){
-        for(int j = 0; j < ny-1; ++j){
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
             add(i, j, v);
         }
     }
@@ -106,12 +106,12 @@ void ScalarField::setValue(int i, int j, int v) {
     m_h[index(i,j)] = v;
 }
 
-double ScalarField::value(int i, int j){
+double ScalarField::value(int i, int j) const {
     return m_h[index(i,j)];
 }
 
 double ScalarField::value(double x, double y,
-                           interpolationType interpolation)
+                           interpolationType interpolation) const
 {
     switch(interpolation){
     case INTERPOL_TRIANGULAR : return triangularInterpol(x, y); break;
@@ -121,7 +121,7 @@ double ScalarField::value(double x, double y,
     }
 }
 
-double ScalarField::triangularInterpol(double x, double y) {
+double ScalarField::triangularInterpol(double x, double y) const {
     // Local coordinates
     Vec2 pLocal = localCoordinates(x, y);
 
@@ -145,13 +145,52 @@ double ScalarField::triangularInterpol(double x, double y) {
            + (1 - pCell.y) * value(cellX, cellY+1);
 }
 
-double ScalarField::bilinearInterpol(double x, double y) {
+double ScalarField::bilinearInterpol(double x, double y) const {
 	throw std::logic_error("Not implemented");
     return 0.0;
 }
 
-double ScalarField::bicubicInterpol(double x, double y) {
+double ScalarField::bicubicInterpol(double x, double y) const {
 	throw std::logic_error("Not implemented");
     return 0.0;
 }
 
+Vec2Field ScalarField::gradient() const {
+    Vec2Field vf(Box2(bl, tr), nx, ny);
+
+    for(int i = 0; i < nx; ++i)
+    for(int j = 0; j < ny; ++j){
+        // Point courant et gradient courant
+        Vec3 p = point(i, j);
+        Vec2 grad = Vec2(0.0, 0.0);
+
+        // Parcours de tous les voisins
+        for(int i = 0; i < 8; ++i){
+
+            Vec2 b = Vec2(p) + next[i];
+
+            // Vérification de non débordement avant de récupérer le voisin
+            if(!isInsideDomain(int(b.x), int(b.y)))
+                continue;
+
+            // Calcul de la pente
+            Vec3 q(b.x, b.y, value(int(b.x), int(b.y)));
+            double diff = q.z - p.z;
+            grad = grad + normalize(next[i]) * diff / length[i];
+        }
+
+        std::cout << "set " << grad << endl;
+        vf.setValue(i, j, grad);
+    }
+
+    return vf;
+}
+
+void ScalarField::display() const {
+    for(int i = 0; i < nx; ++i){
+        for(int j = 0; j < ny; ++j){
+            std::cout << value(i, j) << " ";
+        }
+        std::cout << endl;
+    }
+}

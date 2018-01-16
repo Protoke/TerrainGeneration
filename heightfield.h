@@ -13,19 +13,21 @@ public:
     HeightField(const Box2& b, int nx, int ny);
     HeightField(const AnalyticScalarField& a, const Box2& b, int nx, int ny);
 
-    bool inside(const Vec3& p);
+    bool inside(const Vec3& p) const;
 
-    Vec3 normal(int i, int j);
-    Vec3 normal(double x, double y);
+    Vec3 normal(int i, int j) const;
+    Vec3 normal(double x, double y) const;
 
-    ScalarField drainingArea();
-    ScalarField slope();
-    ScalarField streamPower();
-    ScalarField access();
+    ScalarField drainingArea() const;
+    ScalarField slope() const;
+    ScalarField streamPower() const;
+    ScalarField access() const;
+    ScalarField wetnessIndex() const;
+
     int checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
-                            double* dumpHeight, double* dumpSlope);
+                            double* dumpHeight, double* dumpSlope) const;
 
-    Mesh createMesh(int stepi = 1, int stepj = 1);
+    Mesh createMesh(int stepi = 1, int stepj = 1) const;
 };
 
 #endif // HEIGHTFILED_H

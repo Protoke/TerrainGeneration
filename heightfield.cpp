@@ -19,11 +19,11 @@ HeightField::HeightField(const AnalyticScalarField& a, const Box2& b,
     }
 }
 
-bool HeightField::inside(const Vec3 &p){
+bool HeightField::inside(const Vec3 &p) const {
     return p.z < value(p.x, p.y);
 }
 
-Vec3 HeightField::normal(int i, int j){
+Vec3 HeightField::normal(int i, int j) const {
     Vec3 n = Vec3(0.0, 0.0, 1.0);
     Vec3 o = point(i,j);
     // creation vector for each direction
@@ -79,7 +79,7 @@ Vec3 HeightField::normal(int i, int j){
     return normalize(n);
 }
 
-Vec3 HeightField::normal(double x, double y){
+Vec3 HeightField::normal(double x, double y) const {
     Vec3 n = Vec3(0.0, 0.0, 1.0);
 
     // normal interpolation
@@ -110,7 +110,7 @@ Vec3 HeightField::normal(double x, double y){
     return normalize(n);
 }
 
-ScalarField HeightField::drainingArea(){
+ScalarField HeightField::drainingArea() const {
     // Init de la lsite des points dans l'ordre du plus bas au plus haut
     QVector<Vec3> points = listOfPoints();
     std::sort(points.begin(), points.end());
@@ -137,36 +137,30 @@ ScalarField HeightField::drainingArea(){
             totalSlope += s[k];
         }
 
+        double toDispatch = sf.value(int(point.x), int(point.y));
+
         // Dispatch sur les voisins avec une fraction dépendant de la pente
         // (ou hauteur)
-        double toDispatch = sf.value(int(point.x), int(point.y));
+//        for(int k = 0; k < n; ++k){
+//            sf.add(q[k].x, q[k].y, toDispatch * s[k] / totalSlope);
+//        }
+
+        // Dispatch sur le voisin de plus grande pente (ou hauteur)
         double maxSlope = 0;
         int maxPoint;
         for(int k = 0; k < n; ++k){
-
-            // Répartition équitable sur les voisins
-            double coeff = 0.0;
-            if(totalSlope == 0.0)
-                coeff = 1.0 / (double)n;
-            else
-                coeff = s[k] / totalSlope;
-            sf.add(q[k].x, q[k].y, toDispatch * coeff);
-
-            // Répartition sur le voisin avec la plus grande pente
-//            if(s[k] <= maxSlope){
-//                maxSlope = s[k];
-//                maxPoint = k;
-//            }
+            if(s[k] <= maxSlope){
+                maxSlope = s[k];
+                maxPoint = k;
+            }
         }
-
-        // Répartition sur le voisin avec la plus grande pente (bis)
-//        sf.add(int(q[maxPoint].x), int(q[maxPoint].y), toDispatch);
+        sf.add(int(q[maxPoint].x), int(q[maxPoint].y), toDispatch);
     }
 
     return sf;
 }
 
-ScalarField HeightField::slope(){
+ScalarField HeightField::slope() const {
     ScalarField sf(Box2(bl, tr), nx, ny);
 
     for(int i = 0; i < nx; ++i){
@@ -206,16 +200,40 @@ ScalarField HeightField::slope(){
     return sf;
 }
 
-ScalarField HeightField::streamPower(){
+ScalarField HeightField::streamPower() const {
+    ScalarField A = drainingArea();
+    ScalarField s = slope();
+
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    for(int i = 0; i < nx; ++i)
+    for(int j = 0; j < ny; ++j){
+        sf.setValue(i, j, qSqrt(A.value(i, j)) * qFabs(s.value(i, j)));
+    }
+
+    return sf;
+}
+
+ScalarField HeightField::access() const {
 
 }
 
-ScalarField HeightField::access(){
+ScalarField HeightField::wetnessIndex() const {
+    ScalarField A = drainingArea();
+    ScalarField s = slope();
 
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    for(int i = 0; i < nx; ++i)
+    for(int j = 0; j < ny; ++j){
+        sf.setValue(i, j, qLn(A.value(i, j) / (1.0 + qFabs(s.value(i, j)))));
+    }
+
+    return sf;
 }
 
 int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
-                                     double* dumpHeight, double* dumpSlope)
+                                     double* dumpHeight, double* dumpSlope) const
 {
     int n = 0;
     Vec2 a = Vec2(p);
@@ -232,7 +250,7 @@ int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
         double diff = q.z - p.z;
 
         // Vérification d'une pente descendante
-        if(diff <= 0.0){
+        if(diff < 0.0){
             dumpPoints[n] = q;
             dumpHeight[n] = diff;
             dumpSlope[n] = diff / length[i];
@@ -243,7 +261,7 @@ int HeightField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
     return n;
 }
 
-Mesh HeightField::createMesh(int stepi, int stepj){
+Mesh HeightField::createMesh(int stepi, int stepj) const {
     Mesh m;
 
     // stockage des points min et max du terrain

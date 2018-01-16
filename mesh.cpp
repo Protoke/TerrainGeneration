@@ -86,7 +86,7 @@ bool Mesh::loadOBJ(const QString& filename){
     return true;
 }
 
-bool Mesh::saveOBJ(const QString& filename){
+bool Mesh::saveOBJ(const QString& filename) const {
     QFile file(filename);
     if(!file.open(QIODevice::ReadWrite)){
         return false;
@@ -114,7 +114,7 @@ bool Mesh::saveOBJ(const QString& filename){
     return true;
 }
 
-int Mesh::getId(const Vec3& p){
+int Mesh::getId(const Vec3& p) const {
     for(int i = 0; i < m_vertices.size(); ++i){
         if(p == m_vertices[i])
             return i;
@@ -122,7 +122,7 @@ int Mesh::getId(const Vec3& p){
     return -1;
 }
 
-int Mesh::getId(const Face& f){
+int Mesh::getId(const Face& f) const {
     for(int i = 0; i < m_faces.size(); ++i){
         if(f == m_faces[i])
             return i;
@@ -130,26 +130,26 @@ int Mesh::getId(const Face& f){
     return -1;
 }
 
-Vec3& Mesh::vertex(int id){
+Vec3 Mesh::vertex(int id) const {
     return m_vertices[id];
 }
 
-Vec3& Mesh::vertex(int idFace, int idInFace) {
+Vec3 Mesh::vertex(int idFace, int idInFace) const {
     if(idFace < 0 || idFace > nbFaces()-1 || idInFace < 0 || idInFace > 2) {
         throw std::invalid_argument("Id incorrect");
     }
     return m_vertices[m_faces[idFace].v[idInFace]];
 }
 
-Face& Mesh::face(int id){
+Face Mesh::face(int id) const {
     return m_faces[id];
 }
 
-int Mesh::nbVertices(){
+int Mesh::nbVertices() const {
     return m_vertices.size();
 }
 
-int Mesh::nbFaces(){
+int Mesh::nbFaces() const{
     return m_faces.size();
 }
 
@@ -169,7 +169,7 @@ void Mesh::setMin(Vec3 vertex) {
     m_vMin = vertex;
 }
 
-void Mesh::draw(){
+void Mesh::draw() const {
     glLineWidth(1.0);
     glColor3f(0.0, 1.0, 0.0);
     glBegin(GL_TRIANGLES);

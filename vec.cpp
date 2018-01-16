@@ -60,11 +60,11 @@ Vec3 operator/ (const Vec3& v, double d) {
 	return Vec3(v.x / d, v.y / d, v.z / d);
 }
 
-bool operator== (const Vec2& v1, const Vec2& v2){
+bool operator== (const Vec2& v1, const Vec2& v2) {
     return v1.x == v2.x && v1.y == v2.y;
 }
 
-bool operator== (const Vec3& v1, const Vec3& v2){
+bool operator== (const Vec3& v1, const Vec3& v2) {
     return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
 }
 
@@ -80,10 +80,14 @@ Vec3 cross(const Vec3& va, const Vec3& vb) {
 	);
 }
 
+Vec2 normalize(const Vec2& v) {
+    return v / v.length();
+}
+
 Vec3 normalize(const Vec3& v) {
     return v / v.length();
 }
 
-bool operator< (const Vec3& v1, const Vec3& v2){
+bool operator< (const Vec3& v1, const Vec3& v2) {
     return v1.z < v2.z;
 }

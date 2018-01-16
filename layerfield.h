@@ -12,9 +12,9 @@ public:
                double zMinBR, double zMaxBR,
                double zMinS, double zMaxS);
 
-    double height(int i, int j);
+    double height(int i, int j) const;
 
-    double height(double i, double j);
+    double height(double i, double j) const;
 
     void thermal(const double k, const double erosion_threshold);
 

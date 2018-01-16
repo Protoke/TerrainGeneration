@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
 //        }
 //    }
 
-    QImage i("../TerrainGeneration/Resources/circuit.png");
-//    QImage i("../TerrainGeneration/Resources/test3.png");
+//    QImage i("../TerrainGeneration/Resources/circuit.png");
+    QImage i("../TerrainGeneration/Resources/test2.png");
     HeightField hf;
     hf.load(i, Vec2(0, 0), Vec2(100, 100), 0, 100);
     Mesh m = hf.createMesh();
@@ -47,6 +47,14 @@ int main(int argc, char *argv[])
     ScalarField slope = hf.slope();
     slope.toImage(image);
     image.save("../slope.jpg");
+    ScalarField streamPower = hf.streamPower();
+    streamPower.toImage(image);
+    image.save("../streamPower.jpg");
+    ScalarField wetnessIndex = hf.wetnessIndex();
+    wetnessIndex.toImage(image);
+    image.save("../wetnessIndex.jpg");
+    Vec2Field gradient = hf.gradient();
+    gradient.display();
 
     return 0;
 }

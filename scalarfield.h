@@ -5,6 +5,7 @@
 
 #include "vec.h"
 #include "array.h"
+#include "vecfield.h"
 
 class ScalarField : public Array2 {
 public:
@@ -20,27 +21,31 @@ public:
     void load(const QImage& image,
               const Vec2& bl, const Vec2& tr,
               double zMin, double zMax);
-    void toImage(QImage& image);
+    void toImage(QImage& image) const;
 
-    Vec3 point(int i, int j);
-    Vec3 point(double x, double y);
-    Vec2 point2(int i, int j);
-    QVector<Vec3> listOfPoints();
+    Vec3 point(int i, int j) const;
+    Vec3 point(double x, double y) const;
+    Vec2 point2(int i, int j) const;
+    QVector<Vec3> listOfPoints() const;
 
-    Vec2 range();
+    Vec2 range() const;
 
     void add(double v);
     void add(int i, int j, double v);
 
     void setValue(int x, int y, int v);
-    double value(int i, int j);
+    double value(int i, int j) const;
     double value(double x, double y,
-                  interpolationType interpolation = INTERPOL_TRIANGULAR);
+                  interpolationType interpolation = INTERPOL_TRIANGULAR) const;
+
+    Vec2Field gradient() const;
+
+    void display() const;
 
 protected:
-    double triangularInterpol(double x, double y);
-    double bilinearInterpol(double x, double y);
-    double bicubicInterpol(double x, double y);
+    double triangularInterpol(double x, double y) const;
+    double bilinearInterpol(double x, double y) const;
+    double bicubicInterpol(double x, double y) const;
 
     QVector<double> m_h;
 };

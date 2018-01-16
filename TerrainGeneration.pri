@@ -19,7 +19,8 @@ HEADERS += ./box.h \
     ./gldisplay.h \
     ./face.h \
     ./noise.h \
-    ./dialognew.h
+    ./dialognew.h \
+    $$PWD/vecfield.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
@@ -33,7 +34,8 @@ SOURCES += ./app.cpp \
     ./gldisplay.cpp \
     ./face.cpp \
     ./noise.cpp \
-    ./dialognew.cpp
+    ./dialognew.cpp \
+    $$PWD/vecfield.cpp
 FORMS += ./app.ui
 FORMS += ./dialognew.ui
 RESOURCES += app.qrc

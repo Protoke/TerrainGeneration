@@ -54,12 +54,12 @@ bool operator== (const Vec3& v1, const Vec3& v2);
 
 inline ostream& operator<<(ostream& os, const Vec2& v)
 {
-    os << v.x << ' ' << v.y;
+    os << "(" << v.x << ';' << v.y << ")";
     return os;
 }
 inline ostream& operator<<(ostream& os, const Vec3& v)
 {
-    os << v.x << ' ' << v.y << ' ' << v.z;
+    os << "(" << v.x << ';' << v.y << ';' << v.z << ")";
     return os;
 }
 inline QTextStream& operator<<(QTextStream& os, const Vec3& v)
@@ -71,6 +71,7 @@ inline QTextStream& operator<<(QTextStream& os, const Vec3& v)
 double dot(const Vec3& va, const Vec3& vb);
 Vec3 cross(const Vec3& va, const Vec3& vb);
 
+Vec2 normalize(const Vec2& v);
 Vec3 normalize(const Vec3& v);
 
 // Comparaison en z seulement !

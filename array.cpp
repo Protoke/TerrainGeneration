@@ -34,35 +34,35 @@ Array2::Array2(const Array2 &a, int nx, int ny) :
     Box2(a.bl, a.tr), nx(a.nx), ny(a.ny)
 { }
 
-int Array2::index(int i, int j) {
+int Array2::index(int i, int j) const {
     return i*ny + j;
 }
 
-Vec2 Array2::localCoordinates(double x, double y){
+Vec2 Array2::localCoordinates(double x, double y) const {
     return Vec2((x + bl.x) / (tr.x - bl.x),
                 (y - bl.y) / (tr.y - bl.y));
 }
 
-Vec2 Array2::cellSize() {
+Vec2 Array2::cellSize() const {
     return Vec2(bl.x + (tr.x - bl.x) / nx ,
                 bl.y + (tr.y - bl.y) / ny);
 }
 
-bool Array2::isInsideDomain(int i, int j){
+bool Array2::isInsideDomain(int i, int j) const {
     if(i >= 0 && i < nx)
         if(j >= 0 && j < ny)
             return true;
     return false;
 }
 
-bool Array2::isInsideDomain(double x, double y){
+bool Array2::isInsideDomain(double x, double y) const {
     if(x >= bl.x && x <= tr.x)
         if(y >= bl.y && y <= tr.y)
             return true;
     return false;
 }
 
-Vec2* Array2::neighbours4(int i, int j) {
+Vec2* Array2::neighbours4(int i, int j) const {
     Vec2* neighbours = new Vec2[4];
     neighbours[0] = Vec2(i+1, j);
     neighbours[1] = Vec2(i-1, j);
@@ -71,7 +71,7 @@ Vec2* Array2::neighbours4(int i, int j) {
     return neighbours;
 }
 
-Vec2* Array2::neighbours8(int i, int j) {
+Vec2* Array2::neighbours8(int i, int j) const {
     Vec2* n8 = new Vec2[4];;
     n8[0] = Vec2(i+1, j);
     n8[1] = Vec2(i-1, j);

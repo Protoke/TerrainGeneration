@@ -11,21 +11,21 @@ class Mesh
 {
 public:
     bool loadOBJ(const QString& filename);
-    bool saveOBJ(const QString& filename);
+    bool saveOBJ(const QString& filename) const;
 
-    int getId(const Vec3& p);
-    int getId(const Face& f);
-    Vec3& vertex(int id);
-    Vec3& vertex(int idFace, int idInFace);
-    Face& face(int id);
-    int nbVertices();
-    int nbFaces();
+    int getId(const Vec3& p) const;
+    int getId(const Face& f) const;
+    Vec3 vertex(int id) const;
+    Vec3 vertex(int idFace, int idInFace) const;
+    Face face(int id) const;
+    int nbVertices() const;
+    int nbFaces() const;
     void addVertex(const Vec3& v);
     void addFace(const Face& f);
     void setMax(Vec3 vertex);
     void setMin(Vec3 vertex);
 
-    void draw();
+    void draw() const;
 
 private:
     QVector<Face> m_faces;

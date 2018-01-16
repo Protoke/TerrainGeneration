@@ -13,13 +13,13 @@ void LayerField::load(const QImage& imageBR,
     m_sand.load(imageS, bl, tr, 0, thickness_S);
 }
 
-double LayerField::height(int i, int j) {
+double LayerField::height(int i, int j) const {
     double h_bedrock = m_bedrock.value(i,j);
     double h_sand = m_sand.value(i,j);
     return h_bedrock + h_sand;
 }
 
-double LayerField::height(double i, double j) {
+double LayerField::height(double i, double j) const {
     double h_bedrock = m_bedrock.value(i,j);
     double h_sand = m_sand.value(i,j);
     return h_bedrock + h_sand;
