@@ -2,6 +2,20 @@
 
 #include <iostream>
 
+const Vec3 HeightField::ray[9]= {
+    Vec3(0.0, 0.0, 0.5),
+    Vec3(0.0, 1.0, 0.5),
+    Vec3(0.0, -1.0, 0.5),
+    Vec3(1.0, 0.0, 0.5),
+    Vec3(-1.0, 0.0, 0.5),
+    Vec3(1.0, 1.0, 0.5),
+    Vec3(1.0, -1.0, 0.5),
+    Vec3(-1.0, 1.0, 0.5),
+    Vec3(-1.0, -1.0, 0.5)
+};
+
+double lambda;
+
 HeightField::HeightField() { }
 
 HeightField::HeightField(const Box2& b, int nx, int ny) :
@@ -110,6 +124,24 @@ Vec3 HeightField::normal(double x, double y) const {
     return normalize(n);
 }
 
+bool HeightField::intersect(Ray r, double t, double range) const{
+    double d = 0.0;
+    Vec3 p = r(d);
+
+    while(isInsideDomain(p.x, p.y) && d < range){
+        if(p.z <= value(p.x, p.y)){
+            return true;
+        }
+
+        double step = (p.z - r.origin.z) / lambda;
+
+        d += max(step, 0.1);
+        p = r(d);
+    }
+
+    return false;
+}
+
 ScalarField HeightField::drainingArea() const {
     // Init de la lsite des points dans l'ordre du plus bas au plus haut
     QVector<Vec3> points = listOfPoints();
@@ -178,8 +210,40 @@ ScalarField HeightField::streamPower() const {
     return sf;
 }
 
-ScalarField HeightField::access() const {
+double HeightField::access(Vec2 _p, double range) const {
+    Vec3 p = point(_p.x, _p.y);
+    p.z += 0.1; // décalage pour éviter l'auto-intersection
 
+    int n = 9; // nb de rayons
+
+    int value = 0;
+    for(int i = 0; i < n; i++){
+        Ray r(p, ray[i]);
+        if(!intersect(r, 0.0, range))
+            value++;
+    }
+
+//    std::cout << "Point " << p << " done." << std::endl;
+
+    return (double)value / (double)n;
+}
+
+ScalarField HeightField::access(double range) const {
+    ScalarField sf(Box2(bl, tr), nx, ny);
+
+    double stepX = (tr.x - bl.x) / (nx-1);
+    double stepY = (tr.y - bl.y) / (ny-1);
+
+    lambda = gradientNorm().range().y; // max de la dérivée
+
+    for(int i = 0; i < nx; ++i)
+    for(int j = 0; j < ny; ++j){
+        Vec2 pos((double)i * stepX,
+                 (double)j * stepY);
+        sf.setValue(i, j, access(pos, range));
+    }
+
+    return sf;
 }
 
 ScalarField HeightField::wetnessIndex() const {

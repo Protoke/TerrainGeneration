@@ -34,7 +34,7 @@ void ScalarField::load(const QImage& image,
     }
 }
 
-void ScalarField::toImage(QImage& image) const {
+void ScalarField::toImage(QImage& image, bool useColor) const {
     Vec2 zMinMax = range();
     double zmin = zMinMax.x;
     double zmax = zMinMax.y;
@@ -42,8 +42,17 @@ void ScalarField::toImage(QImage& image) const {
     image = QImage(nx, ny, QImage::Format_RGB32);
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
-            int gray = (m_h[index(i,j)] - zmin) * 255 / (zmax - zmin);
-            image.setPixel(i, j, qRgb(gray, gray, gray));
+            QRgb color;
+            if(useColor){
+                double u = (m_h[index(i,j)] - zmin) / (zmax - zmin);
+                color = qRgb((1.0-u) * 255, 0.0, u * 255);
+            }
+            else{
+                int gray = (m_h[index(i,j)] - zmin) * 255 / (zmax - zmin);
+                color = qRgb(gray, gray, gray);
+            }
+
+            image.setPixel(i, j, color);
         }
     }
 }
@@ -102,7 +111,7 @@ void ScalarField::add(int i, int j, double v){
     m_h[index(i,j)] += v;
 }
 
-void ScalarField::setValue(int i, int j, int v) {
+void ScalarField::setValue(int i, int j, double v) {
     m_h[index(i,j)] = v;
 }
 
@@ -114,35 +123,65 @@ double ScalarField::value(double x, double y,
                            interpolationType interpolation) const
 {
     switch(interpolation){
-    case INTERPOL_TRIANGULAR : return triangularInterpol(x, y); break;
-    case INTERPOL_BILINEAR : return bilinearInterpol(x, y); break;
-    case INTERPOL_BICUBIC : return bicubicInterpol(x, y); break;
+    case INTERPOL_TRIANGULAR : return triangularInterpol(x, y);
+    case INTERPOL_BILINEAR : return bilinearInterpol(x, y);
+    case INTERPOL_BICUBIC : return bicubicInterpol(x, y);
     default : throw std::invalid_argument("Bad interpolation");
     }
 }
 
 double ScalarField::triangularInterpol(double x, double y) const {
+    double ncx = nx - 1;
+    double ncy = ny - 1;
+
     // Local coordinates
     Vec2 pLocal = localCoordinates(x, y);
 
     // Cell coordinates
-    Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny));
-    int cellX = (int) cell.x;
-    int cellY = (int) cell.y;
+    int cellX = pLocal.x * ncx;
+    int cellY = pLocal.y * ncy;
+    if(cellX == ncx)
+        cellX -= 1;
+    if(cellY == ncy)
+        cellY -= 1;
 
     // In-cell coordinates
-    Vec2 pCell = Vec2(pLocal.x - cell.x * (tr.x - bl.x) / nx,
-                          pLocal.y - cell.y * (tr.y - bl.y) / ny);
+    Vec2 pCell = Vec2(pLocal.x * ncx - (double)cellX,
+                      pLocal.y * ncy - (double)cellY);
 
-    if (pLocal.x + pLocal.y < 1.0) {
-        return (1 - pCell.x - pCell.y) * value(cellX, cellY)
+    if (pCell.x + pCell.y < 1.0) {
+        return (1.0 - pCell.x - pCell.y) * value(cellX, cellY)
                + pCell.x * value(cellX+1, cellY)
                + pCell.y * value(cellX, cellY+1);
     }
     //else
-    return (pCell.x + pCell.y - 1) * value(cellX+1, cellY+1)
-           + (1 - pCell.x) * value(cellX+1, cellY)
-           + (1 - pCell.y) * value(cellX, cellY+1);
+    return (pCell.x + pCell.y - 1.0) * value(cellX+1, cellY+1)
+           + (1.0 - pCell.x) * value(cellX, cellY+1)
+           + (1.0 - pCell.y) * value(cellX+1, cellY);
+
+    // OLD
+//    // Local coordinates
+//    Vec2 pLocal = localCoordinates(x, y);
+
+//    // Cell coordinates
+////    Vec2 cell = Vec2(int(pLocal.x * (nx-1)), int(pLocal.y * (ny-1)));
+//    Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny)); // SEGFAULT ici ???
+//    int cellX = (int) cell.x;
+//    int cellY = (int) cell.y;
+
+//    // In-cell coordinates
+//    Vec2 pCell = Vec2(pLocal.x - cell.x * (tr.x - bl.x) / nx,
+//                          pLocal.y - cell.y * (tr.y - bl.y) / ny);
+
+//    if (pLocal.x + pLocal.y < 1.0) {
+//        return (1 - pCell.x - pCell.y) * value(cellX, cellY)
+//               + pCell.x * value(cellX+1, cellY)
+//               + pCell.y * value(cellX, cellY+1);
+//    }
+//    //else
+//    return (pCell.x + pCell.y - 1) * value(cellX+1, cellY+1)
+//           + (1 - pCell.x) * value(cellX+1, cellY)
+//           + (1 - pCell.y) * value(cellX, cellY+1);
 }
 
 double ScalarField::bilinearInterpol(double x, double y) const {

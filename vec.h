@@ -76,3 +76,6 @@ Vec3 normalize(const Vec3& v);
 
 // Comparaison en z seulement !
 bool operator< (const Vec3& v1, const Vec3& v2);
+
+Vec2 randVec2(double minX = 0.0, double minY = 0.0,
+              double maxX = 1.0, double maxY = 1.0);

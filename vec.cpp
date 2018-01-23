@@ -1,6 +1,7 @@
-﻿#include "vec.h"
+﻿#include "qmath.h"
 
-#include "qmath.h"
+#include "vec.h"
+#include "mathutilities.h"
 
 Vec2::Vec2() : x(0.0), y(0.0) { }
 Vec2::Vec2(double x, double y) : x(x), y(y) { }
@@ -90,4 +91,8 @@ Vec3 normalize(const Vec3& v) {
 
 bool operator< (const Vec3& v1, const Vec3& v2) {
     return v1.z < v2.z;
+}
+
+Vec2 randVec2(double minX, double minY, double maxX, double maxY){
+    return Vec2(randDouble(minX, maxX), randDouble(minY, maxY));
 }

@@ -20,7 +20,10 @@ HEADERS += ./box.h \
     ./face.h \
     ./noise.h \
     ./dialognew.h \
-    $$PWD/vecfield.h
+    $$PWD/vecfield.h \
+    $$PWD/ray.h \
+    $$PWD/poissontile.h \
+    $$PWD/mathutilities.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
@@ -35,7 +38,10 @@ SOURCES += ./app.cpp \
     ./face.cpp \
     ./noise.cpp \
     ./dialognew.cpp \
-    $$PWD/vecfield.cpp
+    $$PWD/vecfield.cpp \
+    $$PWD/ray.cpp \
+    $$PWD/poissontile.cpp \
+    $$PWD/mathutilities.cpp
 FORMS += ./app.ui
 FORMS += ./dialognew.ui
 RESOURCES += app.qrc

@@ -23,7 +23,7 @@ public:
     void load(const QImage& image,
               const Vec2& bl, const Vec2& tr,
               double zMin, double zMax);
-    void toImage(QImage& image) const;
+    void toImage(QImage& image, bool useColor = false) const;
 
     Vec3 point(int i, int j) const;
     Vec3 point(double x, double y) const;
@@ -35,7 +35,7 @@ public:
     void add(double v);
     void add(int i, int j, double v);
 
-    void setValue(int x, int y, int v);
+    void setValue(int x, int y, double v);
     double value(int i, int j) const;
     double value(double x, double y,
                   interpolationType interpolation = INTERPOL_TRIANGULAR) const;
