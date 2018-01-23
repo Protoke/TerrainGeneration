@@ -12,6 +12,10 @@ public:
                double zMinBR, double zMaxBR,
                double zMinS, double zMaxS);
 
+    void load (const QImage& imageBR,
+               const Vec2& bl, const Vec2& tr,
+               double zMinBR, double zMaxBR);
+
     double height(int i, int j) const;
 
     double height(double i, double j) const;
@@ -23,6 +27,10 @@ public:
     void addSand(double h, int i, int j);
 
     void stabilize(const float percentage_landslide);
+
+    ScalarField bedrock();
+
+    ScalarField sand();
 
 private:
     ScalarField m_bedrock;
