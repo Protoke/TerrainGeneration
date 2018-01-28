@@ -33,6 +33,9 @@ public:
 
     HeightField toHeightField() const;
 
+    int checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
+                            double* dumpSlope) const;
+
     ScalarField m_bedrock;
     ScalarField m_sand;
 };

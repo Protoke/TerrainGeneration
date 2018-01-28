@@ -87,17 +87,20 @@ void LayerField::addSand(double h) {
 }
 
 void LayerField::addSand(double h, int i, int j) {
-    if(h <= 0.0) {
-        throw std::invalid_argument("impossible to add a negative or null value of sand");
-    }
-    if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
+   if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
         throw std::invalid_argument("invalid cell coordinates");
     }
-    m_sand.setValue(i, j, m_sand.value(i, j) + h);
+    m_sand.setValue(i, j, std::max(0.0, m_sand.value(i, j) + h));
 }
 
+/**
+ * @brief LayerField::stabilize
+ * @param percentage_landslide in [0.0, 1.0]
+ */
 void LayerField::stabilize(const float percentage_landslide) {
     // TODO : CONTINUE
+    // liste de points dans l'ordre de hauteur decroissante
+    // utilisation de checkFlowDirection
 
     float stabilization_angle = tan(45.0);
 
@@ -107,34 +110,38 @@ void LayerField::stabilize(const float percentage_landslide) {
 
             int nb_landslides = 0;
             QVector<Vec2> landslides_destinations;
-            float delta = m_sand.cellSize().x; // largeur d'une case
             // pour chaque voisin en 8-connexite
-            Vec2* neighbours = m_sand.neighbours8(i, j);
-            for(int k = 0;k < 8;k++) {
+            Vec2 current = Vec2(i, j);
+            for(int k = 0;k < 8;k++){
                 // stabilite = abs( h voisin - h actuel) / delta
-                Vec2 n = neighbours[k];
+                // recuperation voisin
+                Vec2 n = current + m_sand.next[k];
+                // verification de non debordement
+                if(!m_sand.isInsideDomain((int)n.x, (int)n.y))
+                    continue;
+
+                // calcul de stabilite
                 float stabilization = abs(height(i, j) - height(n.x, n.y));
-                if(k <= 3) {
-                    // division par delta
-                    stabilization /= delta;
-                }else {
-                    // division par 2 * racine(delta)
-                    stabilization /= 2.0f * sqrt(delta);
-                }
+                // divise par delta ou 2*sqrt(delta) selon la position du voisin
+                stabilization /= m_sand.length[k];
+
                 // landslide or not ?
                 if(stabilization > stabilization_angle) {
                     nb_landslides++;
                     landslides_destinations.push_back(n);
                 }
             }
+
             // do landslides
-            // compute percentage of sand who falls
-            float landslide_quantity = percentage_landslide * m_sand.value(i, j) / 100.0f;
-            // delete sand of the current vertex
-            addSand(i, j, - landslide_quantity);
-            // add sand on the neighbours
-            for(Vec2 v : landslides_destinations) {
-                addSand(landslide_quantity / (float)nb_landslides);
+            if(landslides_destinations.size() > 0) {
+                // compute percentage of sand who falls
+                float landslide_quantity = percentage_landslide * m_sand.value(i, j);
+                // delete sand of the current vertex
+                addSand(- landslide_quantity, i, j);
+                // add sand on the neighbours
+                for(Vec2 v : landslides_destinations) {
+                    addSand(landslide_quantity / (float)nb_landslides, v.x, v.y);
+                }
             }
         }
     }
@@ -157,4 +164,32 @@ HeightField LayerField::toHeightField() const {
     }
 
     return hf;
+}
+
+int LayerField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
+                                    double* dumpSlope) const
+{
+    int n = 0;
+    Vec2 a = Vec2(p);
+
+    // Parcours de tous les voisins
+    for(int i = 0; i < 8; ++i){
+        Vec2 b = a + m_sand.next[i];
+
+        // Vérification de non débordement avant de récupérer le voisin
+        if(!m_sand.isInsideDomain(int(b.x), int(b.y)))
+            continue;
+
+        Vec3 q(b.x, b.y, height(int(b.x), int(b.y)));
+        double diff = q.z - p.z;
+
+        // Vérification d'une pente descendante
+        if(diff < 0.0){
+            dumpPoints[n] = q;
+            dumpSlope[n] = diff / m_sand.length[i];
+            n++;
+        }
+    }
+
+    return n;
 }

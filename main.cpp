@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 //    testInterface(argc, argv);
 //    testIndicateursTerrain();
 //    testInterpolationHauteur();
-  testPoisson();
-//    testLayerField();
+//  testPoisson();
+    testLayerField();
 
     return 0;
 }
