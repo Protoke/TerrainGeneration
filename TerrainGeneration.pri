@@ -23,7 +23,9 @@ HEADERS += ./box.h \
     $$PWD/vecfield.h \
     $$PWD/ray.h \
     $$PWD/poissontile.h \
-    $$PWD/mathutilities.h
+    $$PWD/mathutilities.h \
+    $$PWD/tree.h \
+    $$PWD/treefield.h
 SOURCES += ./app.cpp \
     ./box.cpp \
     ./main.cpp \
@@ -41,7 +43,9 @@ SOURCES += ./app.cpp \
     $$PWD/vecfield.cpp \
     $$PWD/ray.cpp \
     $$PWD/poissontile.cpp \
-    $$PWD/mathutilities.cpp
+    $$PWD/mathutilities.cpp \
+    $$PWD/tree.cpp \
+    $$PWD/treefield.cpp
 FORMS += ./app.ui
 FORMS += ./dialognew.ui
 RESOURCES += app.qrc

@@ -39,6 +39,8 @@ void testPoisson(){
     for(int i = 0; i < pt.m_pos.size(); ++i){
         cout << "Point : " << pt.m_pos[i] << endl;
     }
+
+
 }
 
 void testInterpolationHauteur(){
