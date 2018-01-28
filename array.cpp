@@ -35,11 +35,11 @@ Array2::Array2(const Array2 &a, int nx, int ny) :
 { }
 
 int Array2::index(int i, int j) const {
-    return i*ny + j;
+    return j*ny + i;
 }
 
 Vec2 Array2::localCoordinates(double x, double y) const {
-    return Vec2((x + bl.x) / (tr.x - bl.x),
+    return Vec2((x - bl.x) / (tr.x - bl.x),
                 (y - bl.y) / (tr.y - bl.y));
 }
 

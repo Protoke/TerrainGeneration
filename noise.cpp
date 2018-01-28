@@ -1,5 +1,7 @@
-#include "noise.h"
 #include <qmath.h>
+
+#include "noise.h"
+#include "mathutilities.h"
 
 /***** Generic class Noise *****/
 
@@ -44,13 +46,6 @@ const int SimplexNoise::perm[512] = {
   107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
   138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 };
-
-/*** TEMPORAIRE ***/
-int integer(double v){
-    if(v < 0)
-        return (int)v - 1;
-    return (int)v;
-}
 
 double SimplexNoise::value(const Vec2& p) const{
     const double& x = p.x;

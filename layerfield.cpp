@@ -1,5 +1,8 @@
-#include "layerfield.h"
 #include <math.h>
+
+#include "layerfield.h"
+#include "poissontile.h"
+#include "tree.h"
 
 void LayerField::load(const QImage& imageBR,
                  const QImage& imageS,
@@ -137,10 +140,21 @@ void LayerField::stabilize(const float percentage_landslide) {
     }
 }
 
-ScalarField LayerField::bedrock() {
+ScalarField LayerField::bedrock() const {
     return m_bedrock;
 }
 
-ScalarField LayerField::sand() {
+ScalarField LayerField::sand() const {
     return m_sand;
+}
+
+HeightField LayerField::toHeightField() const {
+    HeightField hf(Box2(m_bedrock.bl, m_bedrock.tr), m_bedrock.nx, m_bedrock.ny);
+
+    for(int i = 0; i < m_bedrock.nx; ++i)
+    for(int j = 0; j < m_bedrock.ny; ++j){
+        hf.setValue(i, j, height(i, j));
+    }
+
+    return hf;
 }
