@@ -38,47 +38,36 @@ void LayerField::thermal(double k, double erosion_threshold) {
         throw std::invalid_argument("bad value for coefficient k or erosion_threshold in thermal function");
     }
 
-    // TODO : gerer les cases en bordures pour l'erosion
-
-    // Stress Map
-    ScalarField stressMap(Box2(m_bedrock.bl, m_bedrock.tr), m_bedrock.nx, m_bedrock.ny);
-
-    // calcul du stress pour chaque case de la grille sauf les bords
-    for(int i = 1;i < m_bedrock.nx - 1;i++) {
-        for(int j = 1; j < m_bedrock.ny - 1;j++) {
+    // calcul de delta_h pour chaque case de la grille sauf les bords
+    for(int i = 0;i < m_bedrock.nx;i++) {
+        for(int j = 0; j < m_bedrock.ny;j++) {
 
             // stress = k * delta_h;
             // delta_h = moyenne des 4 variations de hauteurs
             // en verifiant que le voisin n'est pas plus grand
             // (on prend le max entre 0 et la difference de hauteur avec le voisin)
             double value = m_bedrock.value(i,j);
-            double delta_h = ( max(value - height(i, j+1), 0.0) +
-                               max(value - height(i, j-1), 0.0) +
-                               max(value - height(i+1 , j), 0.0) +
-                               max(value - height(i-1, j), 0.0 ) )
-                              / 4.0 ;
+            int nb_neighbours = 0;
+            double delta_h = 0.0;
+
+            for(int n = 0;n <= 6;n+=2) {
+                Vec2 v = Vec2(i, j) + m_bedrock.next[n];
+                // Verification de non debordement avant de recuperer le voisin
+                if(!m_bedrock.isInsideDomain(int(v.x), int(v.y)))
+                    continue;
+                delta_h += max( value - height(int(v.x), int(v.y)), 0.0 );
+                nb_neighbours++;
+            }
+            delta_h /= nb_neighbours;
+
             // on verifie que la moyennes des differences de hauteurs est superieure au seuil
             if(delta_h > erosion_threshold) {
                 // quantite de bedrock a transformer en sable
                 double stress = k * (delta_h - erosion_threshold);
-                stressMap.setValue(i, j, stress);
-            }
-
-        }
-    }
-
-    // calcul du stress pour les coins
-
-
-    // erosion en fonction du stress
-    for(int i = 1;i < m_bedrock.nx - 1;i++) {
-        for(int j = 1; j < m_bedrock.ny - 1;j++) {
-            double stress = stressMap.value(i, j);
-            if(stress > 0.0) {
                 m_bedrock.setValue(i, j, m_bedrock.value(i,j) - stress);
                 addSand(stress, i, j);
             }
-        }
+       }
     }
 }
 

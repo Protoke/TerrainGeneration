@@ -65,17 +65,23 @@ int main(int argc, char *argv[])
     LayerField lf;
     lf.load(imageBR, Vec2(0,0), Vec2(100,100), 0, 100);
 
-    lf.thermal(1.0, 0.0);
-    //lf.addSand(10);
-
-    QImage BR;
-    lf.bedrock().toImage(BR);
-    BR.save("../BR.jpg");
+    cout << "BEDROCK BASE" << endl;
     lf.bedrock().display();
     cout << endl;
-    QImage SD;
-    lf.sand().toImage(SD);
-    SD.save("../SD.jpg");
+
+    lf.thermal(1.0, 0.0);
+
+    cout << "BEDROCK AFTER THERMAL" << endl;
+    lf.bedrock().display();
+    cout << endl;
+
+    cout << "SAND AFTER THERMAL" << endl;
+    lf.sand().display();
+    cout << endl;
+
+    lf.stabilize(0.5);
+
+    cout << "SAND AFTER STABILIZE" << endl;
     lf.sand().display();
 
     return 0;
