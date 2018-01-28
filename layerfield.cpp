@@ -96,52 +96,43 @@ void LayerField::addSand(double h, int i, int j) {
 /**
  * @brief LayerField::stabilize
  * @param percentage_landslide in [0.0, 1.0]
+ * @param nb_iterations
  */
-void LayerField::stabilize(const float percentage_landslide) {
+void LayerField::stabilize(double percentage_landslide, int nb_iterations) {
     // TODO : CONTINUE
     // liste de points dans l'ordre de hauteur decroissante
     // utilisation de checkFlowDirection
 
-    float stabilization_angle = tan(45.0);
+    double stabilization_angle = tan(45.0);
 
-    // parcours du terrain
-    for(int i = 0;i < m_sand.nx;i++) {
-        for(int j = 0;j < m_sand.ny;j++) {
+    for(int count = 0;count < nb_iterations;count++) {
+        // Init de la liste des points dans l'ordre du plus bas au plus haut
+        QVector<Vec3> points = listOfPoints();
+        std::sort(points.begin(), points.end());
 
-            int nb_landslides = 0;
-            QVector<Vec2> landslides_destinations;
-            // pour chaque voisin en 8-connexite
-            Vec2 current = Vec2(i, j);
-            for(int k = 0;k < 8;k++){
-                // stabilite = abs( h voisin - h actuel) / delta
-                // recuperation voisin
-                Vec2 n = current + m_sand.next[k];
-                // verification de non debordement
-                if(!m_sand.isInsideDomain((int)n.x, (int)n.y))
-                    continue;
+        // parcours du terrain
+        for(int i = points.size() - 1;i >= 0; i--) {
+            Vec3 point = points[i];
+            Vec3 n_positions[8];    // positions des voisins
+            double n_slope[8];      // pente des voisins
+            int n = checkStabilizationDirections(point, n_positions, n_slope,
+                                                 stabilization_angle);
 
-                // calcul de stabilite
-                float stabilization = abs(height(i, j) - height(n.x, n.y));
-                // divise par delta ou 2*sqrt(delta) selon la position du voisin
-                stabilization /= m_sand.length[k];
-
-                // landslide or not ?
-                if(stabilization > stabilization_angle) {
-                    nb_landslides++;
-                    landslides_destinations.push_back(n);
-                }
+            // Calcul de la somme des differences de pente
+            double totalSlope = 0.0;
+            for(int k = 0; k < n; ++k){
+                totalSlope += n_slope[k];
             }
 
-            // do landslides
-            if(landslides_destinations.size() > 0) {
-                // compute percentage of sand who falls
-                float landslide_quantity = percentage_landslide * m_sand.value(i, j);
-                // delete sand of the current vertex
-                addSand(- landslide_quantity, i, j);
-                // add sand on the neighbours
-                for(Vec2 v : landslides_destinations) {
-                    addSand(landslide_quantity / (float)nb_landslides, v.x, v.y);
-                }
+            double landscape_quantity = percentage_landslide *
+                                        m_sand.value(point.x, point.y);
+
+            // Enleve la quantite de sable du point
+            // et dispatche sur les voisins avec une fraction dependante de la pente
+            for(int k = 0; k < n; ++k){
+                addSand(-landscape_quantity, point.x, point.y);
+                addSand(landscape_quantity * n_slope[k] / totalSlope,
+                        n_positions[k].x, n_positions[k].y);
             }
         }
     }
@@ -169,7 +160,7 @@ HeightField LayerField::toHeightField() const {
 int LayerField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
                                     double* dumpSlope) const
 {
-    int n = 0;
+    int n = 0; // nombre de voisins plus bas que p
     Vec2 a = Vec2(p);
 
     // Parcours de tous les voisins
@@ -185,11 +176,48 @@ int LayerField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
 
         // Vérification d'une pente descendante
         if(diff < 0.0){
-            dumpPoints[n] = q;
-            dumpSlope[n] = diff / m_sand.length[i];
+            dumpPoints[n] = q; // position du voisin
+            dumpSlope[n] = diff / m_sand.length[i]; // difference de hauteur du voisin
             n++;
         }
     }
 
     return n;
+}
+
+QVector<Vec3> LayerField::listOfPoints() const {
+    QVector<Vec3> points(m_bedrock.nx * m_bedrock.ny);
+
+    for(int i = 0; i < m_bedrock.nx; ++i){
+        for(int j = 0; j < m_bedrock.ny; ++j){
+            points[m_bedrock.index(i, j)] = Vec3(i, j, height(i, j));
+        }
+    }
+
+    return points;
+}
+
+int LayerField::checkStabilizationDirections(const Vec3& p, Vec3* dumpPoints,
+                                             double* dumpSlope,
+                                             const double stabilizationAngle) const {
+
+    Vec3 n_positions[8];    // positions des voisins
+    double n_slope[8];      // pente des voisins
+    // recuperation du nb de voisins plus bas que p avec position et pente
+    int n = checkFlowDirections(p, n_positions, n_slope);
+
+    // Parcours de tous les voisins plus bas que p
+    int newN = 0;
+    for(int i = 0; i < n; ++i){
+
+        // Verification de la stabilite
+        if(-n_slope[i] > stabilizationAngle){
+            dumpPoints[newN] = n_positions[i]; // position du voisin
+            dumpSlope[newN] = n_slope[i];
+            newN++;
+        }
+    }
+
+    return newN;
+
 }

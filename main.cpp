@@ -33,10 +33,28 @@ void testLayerField(){
     lf.sand().display();
     cout << endl;
 
-    lf.stabilize(0.5);
+    QImage terrainAfterThermal;
+    lf.toHeightField().toImage(terrainAfterThermal);
+    terrainAfterThermal.save("../terrainAfterThermal.jpg");
+
+    lf.stabilize(0.5, 1);
 
     cout << "SAND AFTER STABILIZE" << endl;
     lf.sand().display();
+
+    QImage terrainAfterStabilize;
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize1.jpg");
+
+    lf.stabilize(0.5, 1);
+
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize2.jpg");
+
+    lf.stabilize(0.5, 1);
+
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize3.jpg");
 }
 
 void testPoisson(){
