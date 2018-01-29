@@ -72,7 +72,7 @@ Vec2* Array2::neighbours4(int i, int j) const {
 }
 
 Vec2* Array2::neighbours8(int i, int j) const {
-    Vec2* n8 = new Vec2[4];;
+    Vec2* n8 = new Vec2[8];;
     n8[0] = Vec2(i+1, j);
     n8[1] = Vec2(i-1, j);
     n8[2] = Vec2(i, j+1);

@@ -41,47 +41,36 @@ void LayerField::thermal(double k, double erosion_threshold) {
         throw std::invalid_argument("bad value for coefficient k or erosion_threshold in thermal function");
     }
 
-    // TODO : gerer les cases en bordures pour l'erosion
-
-    // Stress Map
-    ScalarField stressMap(Box2(m_bedrock.bl, m_bedrock.tr), m_bedrock.nx, m_bedrock.ny);
-
-    // calcul du stress pour chaque case de la grille sauf les bords
-    for(int i = 1;i < m_bedrock.nx - 1;i++) {
-        for(int j = 1; j < m_bedrock.ny - 1;j++) {
+    // calcul de delta_h pour chaque case de la grille sauf les bords
+    for(int i = 0;i < m_bedrock.nx;i++) {
+        for(int j = 0; j < m_bedrock.ny;j++) {
 
             // stress = k * delta_h;
             // delta_h = moyenne des 4 variations de hauteurs
             // en verifiant que le voisin n'est pas plus grand
             // (on prend le max entre 0 et la difference de hauteur avec le voisin)
             double value = m_bedrock.value(i,j);
-            double delta_h = ( max(value - height(i, j+1), 0.0) +
-                               max(value - height(i, j-1), 0.0) +
-                               max(value - height(i+1 , j), 0.0) +
-                               max(value - height(i-1, j), 0.0 ) )
-                              / 4.0 ;
+            int nb_neighbours = 0;
+            double delta_h = 0.0;
+
+            for(int n = 0;n <= 6;n+=2) {
+                Vec2 v = Vec2(i, j) + m_bedrock.next[n];
+                // Verification de non debordement avant de recuperer le voisin
+                if(!m_bedrock.isInsideDomain(int(v.x), int(v.y)))
+                    continue;
+                delta_h += max( value - height(int(v.x), int(v.y)), 0.0 );
+                nb_neighbours++;
+            }
+            delta_h /= nb_neighbours;
+
             // on verifie que la moyennes des differences de hauteurs est superieure au seuil
             if(delta_h > erosion_threshold) {
                 // quantite de bedrock a transformer en sable
                 double stress = k * (delta_h - erosion_threshold);
-                stressMap.setValue(i, j, stress);
-            }
-
-        }
-    }
-
-    // calcul du stress pour les coins
-
-
-    // erosion en fonction du stress
-    for(int i = 1;i < m_bedrock.nx - 1;i++) {
-        for(int j = 1; j < m_bedrock.ny - 1;j++) {
-            double stress = stressMap.value(i, j);
-            if(stress > 0.0) {
                 m_bedrock.setValue(i, j, m_bedrock.value(i,j) - stress);
                 addSand(stress, i, j);
             }
-        }
+       }
     }
 }
 
@@ -98,54 +87,52 @@ void LayerField::addSand(double h) {
 }
 
 void LayerField::addSand(double h, int i, int j) {
-    if(h <= 0.0) {
-        throw std::invalid_argument("impossible to add a negative or null value of sand");
-    }
-    if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
+   if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
         throw std::invalid_argument("invalid cell coordinates");
     }
-    m_sand.setValue(i, j, m_sand.value(i, j) + h);
+    m_sand.setValue(i, j, std::max(0.0, m_sand.value(i, j) + h));
 }
 
-void LayerField::stabilize(const float percentage_landslide) {
+/**
+ * @brief LayerField::stabilize
+ * @param percentage_landslide in [0.0, 1.0]
+ * @param nb_iterations
+ */
+void LayerField::stabilize(double percentage_landslide, int nb_iterations) {
     // TODO : CONTINUE
+    // liste de points dans l'ordre de hauteur decroissante
+    // utilisation de checkFlowDirection
 
-    float stabilization_angle = tan(45.0);
+    double stabilization_angle = tan(45.0);
 
-    // parcours du terrain
-    for(int i = 0;i < m_sand.nx;i++) {
-        for(int j = 0;j < m_sand.ny;j++) {
+    for(int count = 0;count < nb_iterations;count++) {
+        // Init de la liste des points dans l'ordre du plus bas au plus haut
+        QVector<Vec3> points = listOfPoints();
+        std::sort(points.begin(), points.end());
 
-            int nb_landslides = 0;
-            QVector<Vec2> landslides_destinations;
-            float delta = m_sand.cellSize().x; // largeur d'une case
-            // pour chaque voisin en 8-connexite
-            Vec2* neighbours = m_sand.neighbours8(i, j);
-            for(int k = 0;k < 8;k++) {
-                // stabilite = abs( h voisin - h actuel) / delta
-                Vec2 n = neighbours[k];
-                float stabilization = abs(height(i, j) - height(n.x, n.y));
-                if(k <= 3) {
-                    // division par delta
-                    stabilization /= delta;
-                }else {
-                    // division par 2 * racine(delta)
-                    stabilization /= 2.0f * sqrt(delta);
-                }
-                // landslide or not ?
-                if(stabilization > stabilization_angle) {
-                    nb_landslides++;
-                    landslides_destinations.push_back(n);
-                }
+        // parcours du terrain
+        for(int i = points.size() - 1;i >= 0; i--) {
+            Vec3 point = points[i];
+            Vec3 n_positions[8];    // positions des voisins
+            double n_slope[8];      // pente des voisins
+            int n = checkStabilizationDirections(point, n_positions, n_slope,
+                                                 stabilization_angle);
+
+            // Calcul de la somme des differences de pente
+            double totalSlope = 0.0;
+            for(int k = 0; k < n; ++k){
+                totalSlope += n_slope[k];
             }
-            // do landslides
-            // compute percentage of sand who falls
-            float landslide_quantity = percentage_landslide * m_sand.value(i, j) / 100.0f;
-            // delete sand of the current vertex
-            addSand(i, j, - landslide_quantity);
-            // add sand on the neighbours
-            for(Vec2 v : landslides_destinations) {
-                addSand(landslide_quantity / (float)nb_landslides);
+
+            double landscape_quantity = percentage_landslide *
+                                        m_sand.value(point.x, point.y);
+
+            // Enleve la quantite de sable du point
+            // et dispatche sur les voisins avec une fraction dependante de la pente
+            for(int k = 0; k < n; ++k){
+                addSand(-landscape_quantity, point.x, point.y);
+                addSand(landscape_quantity * n_slope[k] / totalSlope,
+                        n_positions[k].x, n_positions[k].y);
             }
         }
     }
@@ -168,4 +155,69 @@ HeightField LayerField::toHeightField() const {
     }
 
     return hf;
+}
+
+int LayerField::checkFlowDirections(const Vec3& p, Vec3* dumpPoints,
+                                    double* dumpSlope) const
+{
+    int n = 0; // nombre de voisins plus bas que p
+    Vec2 a = Vec2(p);
+
+    // Parcours de tous les voisins
+    for(int i = 0; i < 8; ++i){
+        Vec2 b = a + m_sand.next[i];
+
+        // Vérification de non débordement avant de récupérer le voisin
+        if(!m_sand.isInsideDomain(int(b.x), int(b.y)))
+            continue;
+
+        Vec3 q(b.x, b.y, height(int(b.x), int(b.y)));
+        double diff = q.z - p.z;
+
+        // Vérification d'une pente descendante
+        if(diff < 0.0){
+            dumpPoints[n] = q; // position du voisin
+            dumpSlope[n] = diff / m_sand.length[i]; // difference de hauteur du voisin
+            n++;
+        }
+    }
+
+    return n;
+}
+
+QVector<Vec3> LayerField::listOfPoints() const {
+    QVector<Vec3> points(m_bedrock.nx * m_bedrock.ny);
+
+    for(int i = 0; i < m_bedrock.nx; ++i){
+        for(int j = 0; j < m_bedrock.ny; ++j){
+            points[m_bedrock.index(i, j)] = Vec3(i, j, height(i, j));
+        }
+    }
+
+    return points;
+}
+
+int LayerField::checkStabilizationDirections(const Vec3& p, Vec3* dumpPoints,
+                                             double* dumpSlope,
+                                             const double stabilizationAngle) const {
+
+    Vec3 n_positions[8];    // positions des voisins
+    double n_slope[8];      // pente des voisins
+    // recuperation du nb de voisins plus bas que p avec position et pente
+    int n = checkFlowDirections(p, n_positions, n_slope);
+
+    // Parcours de tous les voisins plus bas que p
+    int newN = 0;
+    for(int i = 0; i < n; ++i){
+
+        // Verification de la stabilite
+        if(-n_slope[i] > stabilizationAngle){
+            dumpPoints[newN] = n_positions[i]; // position du voisin
+            dumpSlope[newN] = n_slope[i];
+            newN++;
+        }
+    }
+
+    return newN;
+
 }

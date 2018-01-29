@@ -37,18 +37,42 @@ void testLayerField(){
     LayerField lf;
     lf.load(imageBR, Vec2(0,0), Vec2(100,100), 0, 100);
 
-    lf.thermal(1.0, 0.0);
-    //lf.addSand(10);
-
-    QImage BR;
-    lf.bedrock().toImage(BR);
-    BR.save("../BR.jpg");
+    cout << "BEDROCK BASE" << endl;
     lf.bedrock().display();
     cout << endl;
-    QImage SD;
-    lf.sand().toImage(SD);
-    SD.save("../SD.jpg");
+
+    lf.thermal(1.0, 0.0);
+
+    cout << "BEDROCK AFTER THERMAL" << endl;
+    lf.bedrock().display();
+    cout << endl;
+
+    cout << "SAND AFTER THERMAL" << endl;
     lf.sand().display();
+    cout << endl;
+
+    QImage terrainAfterThermal;
+    lf.toHeightField().toImage(terrainAfterThermal);
+    terrainAfterThermal.save("../terrainAfterThermal.jpg");
+
+    lf.stabilize(0.5, 1);
+
+    cout << "SAND AFTER STABILIZE" << endl;
+    lf.sand().display();
+
+    QImage terrainAfterStabilize;
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize1.jpg");
+
+    lf.stabilize(0.5, 1);
+
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize2.jpg");
+
+    lf.stabilize(0.5, 1);
+
+    lf.toHeightField().toImage(terrainAfterStabilize);
+    terrainAfterStabilize.save("../terrainAfterStabilize3.jpg");
 }
 
 void testPoisson(){
@@ -129,9 +153,14 @@ int main(int argc, char *argv[])
 //    testInterface(argc, argv);
 //    testIndicateursTerrain();
 //    testInterpolationHauteur();
+<<<<<<< HEAD
 //    testPoisson();
 //    testLayerField();
     testTree();
+=======
+//  testPoisson();
+    testLayerField();
+>>>>>>> 0a039e9eb11b37f2be0915e5cbd731a99a44109d
 
     return 0;
 }
