@@ -2,6 +2,7 @@
 
 #include <stdexcept> 
 #include <QRgb>
+#include <QColor>
 
 ScalarField::ScalarField() { }
 
@@ -40,6 +41,8 @@ void ScalarField::toImage(QImage& image, bool useColor) const {
     double zmax = zMinMax.y;
 
     image = QImage(nx, ny, QImage::Format_RGB32);
+    image.fill(QColor(0, 0, 0));
+
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
             QRgb color;

@@ -3,21 +3,28 @@
 
 #include <QVector>
 
-#include "array.h"
+#include "tree.h"
+#include "scalarfield.h"
 #include "layerfield.h"
 
-class TreeField : public Array2
+class TreeField
 {
 public:
     TreeField();
-    TreeField(const Box2& b, int nx, int ny);
+    TreeField(const LayerField& lf);
 
-    void initTrees(const LayerField& lf, const Vec2& origin,
-                   const Box2& tileBox, double treeRadius);
+    void initSapinDensity(const LayerField& lf);
 
-    void toImage(QImage& image, double resolutionFactor = 1.0) const;
+    QVector<Vec2> spawnTrees(const Vec2& origin, const Box2& tileBox,
+                             double treeRadius);
 
-    QVector<Vec3> m_pos;
+    void toImage(QImage& image, const QVector<Vec2>& posTree,
+                        double resolutionFactor = 1.0) const;
+
+    ScalarField m_sapinDensity;
+
+protected:
+    ScalarField initTreeDensity(const LayerField& lf, Tree* t);
 };
 
 #endif // TREEFIELD_H

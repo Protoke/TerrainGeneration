@@ -10,8 +10,26 @@
 #include "iostream"
 #include "poissontile.h"
 #include "layerfield.h"
+#include "treefield.h"
 
 using namespace std;
+
+void testTree() {
+//    QImage terrain("../TerrainGeneration/Resources/test.png");
+    LayerField lf;
+    lf.load(terrain, Vec2(0, 0), Vec2(100, 100), 0, 3000);
+
+    QImage tree;
+    TreeField tf(lf);
+    tf.m_sapinDensity.toImage(tree);
+    tree.save("../treeDensity.jpg");
+
+    Vec2 origin(0, 0);
+    Box2 tileBox(Vec2(0, 0), Vec2(10, 10));
+    QVector<Vec2> sapins = tf.spawnTrees(origin, tileBox, 2.0);
+    tf.toImage(tree, sapins, 20.0);
+    tree.save("../treePositions.jpg");
+}
 
 void testLayerField(){
     // TEST LAYERFIELD
@@ -39,8 +57,6 @@ void testPoisson(){
     for(int i = 0; i < pt.m_pos.size(); ++i){
         cout << "Point : " << pt.m_pos[i] << endl;
     }
-
-
 }
 
 void testInterpolationHauteur(){
@@ -113,8 +129,9 @@ int main(int argc, char *argv[])
 //    testInterface(argc, argv);
 //    testIndicateursTerrain();
 //    testInterpolationHauteur();
-    testPoisson();
+//    testPoisson();
 //    testLayerField();
+    testTree();
 
     return 0;
 }
