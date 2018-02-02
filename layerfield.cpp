@@ -4,6 +4,13 @@
 #include "poissontile.h"
 #include "tree.h"
 
+LayerField::LayerField() { }
+
+LayerField::LayerField(const HeightField &hf) {
+    m_bedrock = static_cast<ScalarField>(hf);
+    m_sand = ScalarField(Box2(hf.bl, hf.tr), hf.nx, hf.ny);
+}
+
 void LayerField::load(const QImage& imageBR,
                  const QImage& imageS,
                 const Vec2& bl, const Vec2& tr,
@@ -30,10 +37,29 @@ double LayerField::height(int i, int j) const {
     return h_bedrock + h_sand;
 }
 
-double LayerField::height(double i, double j) const {
-    double h_bedrock = m_bedrock.value(i,j);
-    double h_sand = m_sand.value(i,j);
+double LayerField::height(double x, double y) const {
+    double h_bedrock = m_bedrock.value(x,y);
+    double h_sand = m_sand.value(x,y);
     return h_bedrock + h_sand;
+}
+
+void LayerField::addSand(double h) {
+    if(h <= 0.0) {
+        throw std::invalid_argument("impossible to add a negative or null value of sand");
+    }
+
+    for(int i = 0;i < m_sand.nx;i++) {
+        for(int j = 0;j < m_sand.ny;j++) {
+            m_sand.setValue(i, j, m_sand.value(i, j) + h);
+        }
+    }
+}
+
+void LayerField::addSand(double h, int i, int j) {
+   if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
+        throw std::invalid_argument("invalid cell coordinates");
+    }
+    m_sand.setValue(i, j, std::max(0.0, m_sand.value(i, j) + h));
 }
 
 void LayerField::thermal(double k, double erosion_threshold) {
@@ -74,36 +100,8 @@ void LayerField::thermal(double k, double erosion_threshold) {
     }
 }
 
-void LayerField::addSand(double h) {
-    if(h <= 0.0) {
-        throw std::invalid_argument("impossible to add a negative or null value of sand");
-    }
-
-    for(int i = 0;i < m_sand.nx;i++) {
-        for(int j = 0;j < m_sand.ny;j++) {
-            m_sand.setValue(i, j, m_sand.value(i, j) + h);
-        }
-    }
-}
-
-void LayerField::addSand(double h, int i, int j) {
-   if(i < 0 || i >= m_sand.nx || j < 0 || j >= m_sand.ny) {
-        throw std::invalid_argument("invalid cell coordinates");
-    }
-    m_sand.setValue(i, j, std::max(0.0, m_sand.value(i, j) + h));
-}
-
-/**
- * @brief LayerField::stabilize
- * @param percentage_landslide in [0.0, 1.0]
- * @param nb_iterations
- */
 void LayerField::stabilize(double percentage_landslide, int nb_iterations) {
-    // TODO : CONTINUE
-    // liste de points dans l'ordre de hauteur decroissante
-    // utilisation de checkFlowDirection
-
-    double stabilization_angle = tan(45.0);
+    double stabilization_angle = tan(45.0 * M_PI / 180);
 
     for(int count = 0;count < nb_iterations;count++) {
         // Init de la liste des points dans l'ordre du plus bas au plus haut
@@ -125,7 +123,7 @@ void LayerField::stabilize(double percentage_landslide, int nb_iterations) {
             }
 
             double landscape_quantity = percentage_landslide *
-                                        m_sand.value(point.x, point.y);
+                                        m_sand.value((int)point.x, (int)point.y);
 
             // Enleve la quantite de sable du point
             // et dispatche sur les voisins avec une fraction dependante de la pente
@@ -199,7 +197,7 @@ QVector<Vec3> LayerField::listOfPoints() const {
 
 int LayerField::checkStabilizationDirections(const Vec3& p, Vec3* dumpPoints,
                                              double* dumpSlope,
-                                             const double stabilizationAngle) const {
+                                             double stabilizationAngle) const {
 
     Vec3 n_positions[8];    // positions des voisins
     double n_slope[8];      // pente des voisins

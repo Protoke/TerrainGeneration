@@ -5,14 +5,23 @@
 
 using namespace std;
 
+/**
+ * @brief Classe abstraite de vecteur.
+ */
 class Vec {
 public:
+    /**
+     * @brief Calcule la norme du vecteur.
+     */
     virtual double length() const = 0;
 };
 
 class Vec2;
 class Vec3;
 
+/**
+ * @brief Vecteur à 2 dimensions.
+ */
 class Vec2 : public Vec {
 public:
 	Vec2();
@@ -25,6 +34,9 @@ public:
 	double x, y;
 };
 
+/**
+ * @brief Vecteur à 3 dimensions.
+ */
 class Vec3 : public Vec {
 public:
 	Vec3();
@@ -74,8 +86,13 @@ Vec3 cross(const Vec3& va, const Vec3& vb);
 Vec2 normalize(const Vec2& v);
 Vec3 normalize(const Vec3& v);
 
-// Comparaison en z seulement !
+/**
+ * @brief Opérateur de comparaison de deux vecteurs. La comparaison se fait uniquement sur la composante z.
+ */
 bool operator< (const Vec3& v1, const Vec3& v2);
 
+/**
+ * @brief Génère un vecteur 2D de coordonnées x entre minX et maxX et y entre minY et maxY.
+ */
 Vec2 randVec2(double minX = 0.0, double minY = 0.0,
               double maxX = 1.0, double maxY = 1.0);

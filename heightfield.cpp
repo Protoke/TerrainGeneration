@@ -124,12 +124,13 @@ Vec3 HeightField::normal(double x, double y) const {
     return normalize(n);
 }
 
-bool HeightField::intersect(Ray r, double t, double range) const{
+bool HeightField::intersect(Ray& r, double& t, double range) const{
     double d = 0.0;
     Vec3 p = r(d);
 
     while(isInsideDomain(p.x, p.y) && d < range){
         if(p.z <= value(p.x, p.y)){
+            t = d;
             return true;
         }
 
@@ -219,7 +220,8 @@ double HeightField::access(Vec2 _p, double range) const {
     int value = 0;
     for(int i = 0; i < n; i++){
         Ray r(p, ray[i]);
-        if(!intersect(r, 0.0, range))
+        double t;
+        if(!intersect(r, t, range))
             value++;
     }
 

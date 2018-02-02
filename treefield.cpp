@@ -20,6 +20,7 @@ void TreeField::initSapinDensity(const LayerField &lf) {
 
 QVector<Vec2> TreeField::spawnTrees(const Vec2& origin, const Box2& tileBox,
                                     double treeRadius) {
+    randSeed();
     QVector<Vec2> posSapin;
     PoissonTile tile(tileBox.bl, tileBox.tr, treeRadius);
 
@@ -67,17 +68,16 @@ void TreeField::toImage(QImage& image, const QVector<Vec2>& posTree,
         pos.x *= xScale;
         pos.y *= yScale;
 
-        image.setPixel(pos.x, pos.y, color);
+        image.setPixel(pos.x, nyRescaled - 1 - pos.y, color);
     }
 }
 
 ScalarField TreeField::initTreeDensity(const LayerField& lf, Tree* t){
-    ScalarField sf(Box2(lf.m_bedrock.bl, lf.m_bedrock.tr),
-                   lf.m_bedrock.nx, lf.m_bedrock.ny);
+    ScalarField sf(Box2(lf.bedrock().bl, lf.bedrock().tr),
+                   lf.bedrock().nx, lf.bedrock().ny);
 
     HeightField hf = lf.toHeightField();
     ScalarField slope = hf.slope().length();
-    ScalarField drainingArea = hf.drainingArea();
     ScalarField streamPower = hf.streamPower();
     ScalarField access = hf.access((hf.tr.x - hf.bl.x) * 2.5);
     ScalarField wetnessIndex = hf.wetnessIndex();
@@ -85,15 +85,14 @@ ScalarField TreeField::initTreeDensity(const LayerField& lf, Tree* t){
     for(int i = 0; i < sf.nx; ++i)
     for(int j = 0; j < sf.ny; ++j){
         // récupération des différents paramètres
-        double dirtValue = lf.m_sand.value((int)i, (int)j);
+        double dirtValue = lf.sand().value((int)i, (int)j);
         double heightValue = hf.value((int)i, (int)j);
         double slopeValue = slope.value((int)i, (int)j);
-        double drainValue = drainingArea.value((int)i, (int)j);
         double wetnessValue = wetnessIndex.value((int)i, (int)j);
         double streamValue = streamPower.value((int)i, (int)j);
         double lightValue = access.value((int)i, (int)j);
 
-        double density = t->chanceToSpawn(dirtValue, heightValue, slopeValue, drainValue,
+        double density = t->chanceToSpawn(dirtValue, heightValue, slopeValue,
                                          wetnessValue, streamValue, lightValue);
         sf.setValue(i, j, density);
     }

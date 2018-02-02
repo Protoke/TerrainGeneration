@@ -29,7 +29,7 @@ void ScalarField::load(const QImage& image,
 
     for(int i = 0; i < nx; ++i){
         for(int j = 0; j < ny; ++j){
-            m_h[index(i,j)] = (float)qRed(image.pixel(i, j)) * (zMax - zMin) / 255.0
+            m_h[index(i,j)] = (float)qRed(image.pixel(i, ny - 1 -j)) * (zMax - zMin) / 255.0
                     + zMin;
         }
     }
@@ -47,15 +47,17 @@ void ScalarField::toImage(QImage& image, bool useColor) const {
         for(int j = 0; j < ny; ++j){
             QRgb color;
             if(useColor){
-                double u = (m_h[index(i,j)] - zmin) / (zmax - zmin);
-                color = qRgb((1.0-u) * 255, 0.0, u * 255);
+                double u = 2 * (m_h[index(i,j)] - zmin) / (zmax - zmin);
+                double down = min(1.0, 2.0 - u);
+                double up = min(1.0, u);
+                color = qRgb(down * 255, up * 255, 0.0);
             }
             else{
                 int gray = (m_h[index(i,j)] - zmin) * 255 / (zmax - zmin);
                 color = qRgb(gray, gray, gray);
             }
 
-            image.setPixel(i, j, color);
+            image.setPixel(i, ny - 1 - j, color);
         }
     }
 }
@@ -161,35 +163,31 @@ double ScalarField::triangularInterpol(double x, double y) const {
     return (pCell.x + pCell.y - 1.0) * value(cellX+1, cellY+1)
            + (1.0 - pCell.x) * value(cellX, cellY+1)
            + (1.0 - pCell.y) * value(cellX+1, cellY);
-
-    // OLD
-//    // Local coordinates
-//    Vec2 pLocal = localCoordinates(x, y);
-
-//    // Cell coordinates
-////    Vec2 cell = Vec2(int(pLocal.x * (nx-1)), int(pLocal.y * (ny-1)));
-//    Vec2 cell = Vec2(int(pLocal.x * nx), int(pLocal.y * ny)); // SEGFAULT ici ???
-//    int cellX = (int) cell.x;
-//    int cellY = (int) cell.y;
-
-//    // In-cell coordinates
-//    Vec2 pCell = Vec2(pLocal.x - cell.x * (tr.x - bl.x) / nx,
-//                          pLocal.y - cell.y * (tr.y - bl.y) / ny);
-
-//    if (pLocal.x + pLocal.y < 1.0) {
-//        return (1 - pCell.x - pCell.y) * value(cellX, cellY)
-//               + pCell.x * value(cellX+1, cellY)
-//               + pCell.y * value(cellX, cellY+1);
-//    }
-//    //else
-//    return (pCell.x + pCell.y - 1) * value(cellX+1, cellY+1)
-//           + (1 - pCell.x) * value(cellX+1, cellY)
-//           + (1 - pCell.y) * value(cellX, cellY+1);
 }
 
 double ScalarField::bilinearInterpol(double x, double y) const {
-	throw std::logic_error("Not implemented");
-    return 0.0;
+    double ncx = nx - 1;
+    double ncy = ny - 1;
+
+    // Local coordinates
+    Vec2 pLocal = localCoordinates(x, y);
+
+    // Cell coordinates
+    int cellX = pLocal.x * ncx;
+    int cellY = pLocal.y * ncy;
+    if(cellX == ncx)
+        cellX -= 1;
+    if(cellY == ncy)
+        cellY -= 1;
+
+    // In-cell coordinates
+    Vec2 pCell = Vec2(pLocal.x * ncx - (double)cellX,
+                      pLocal.y * ncy - (double)cellY);
+
+    return (1.0 - pCell.x) * (1-0 * pCell.y) * value(cellX, cellY) +
+            pCell.x * (1.0 - pCell.y) * value(cellX + 1, cellY) +
+            (1.0 - pCell.x) * pCell.y * value(cellX, cellY + 1) +
+            pCell.x * pCell.y * value(cellX + 1, cellY + 1);
 }
 
 double ScalarField::bicubicInterpol(double x, double y) const {

@@ -16,7 +16,7 @@ public:
     PoissonTile();
 
     /**
-     * @brief Crée une tuile de centre disques de Poisson.
+     * @brief Crée une tuile de centre de disques de Poisson.
      * @param bl Point englobant minimum (inférieur gauche)
      * @param tr Point englobant maximum (supérieur droit)
      * @param radius Rayon des disques de poisson

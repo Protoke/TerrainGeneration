@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 
 #include <QImage>
+#include <QTime>
 #include <iostream>
 
 #include "analyticscalarfield.h"
@@ -14,8 +15,139 @@
 
 using namespace std;
 
+void demo(){
+    QTime timer;
+    int ms;
+    QImage display;
+
+    /* Terrain depuis heightmap */
+    cout << "Loading terrain from height map." << endl;
+    timer.start();
+    QImage i("../TerrainGeneration/Resources/circuit.png");
+    HeightField hfImage;
+    hfImage.load(i, Vec2(0, 0), Vec2(100, 100), 0, 50);
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds." << endl;
+    cout << "Generating OBJ." << endl;
+    timer.start();
+    Mesh m = hfImage.createMesh();
+    m.saveOBJ("../terrainHeightMap.obj");
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds" << endl;
+    hfImage.toImage(display, true);
+    display.save("../terrainHeightMap.jpg");
+
+    /* Terrain random */
+    cout << "Generating terrain with noise." << endl;
+    timer.start();
+    QVector<double> offsets = {1, 42, 157, 427, 893, 1523, 4242, 6666, 9999, 12345};
+    AnalyticScalarField asf(new SimplexNoise(), 150, 750, offsets, 10);
+    HeightField hf(asf, Box2(Vec2(0, 0), Vec2(1000, 1000)), 500, 500);
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds." << endl;
+    hf.toImage(display, true);
+    display.save("../terrainRandom.jpg");
+    cout << "Generating OBJ." << endl;
+    timer.start();
+    m = hf.createMesh();
+    m.saveOBJ("../terrainRandom.obj");
+    ms= timer.elapsed();
+    cout << "Done in " << ms << " milliseconds" << endl;
+
+    /* Erosion / Stabilisation */
+    cout << "Eroding and stabilising terrain." << endl;
+    timer.start();
+    LayerField lf(hf);
+    lf.addSand(5.0);
+    for(int i = 0; i < 10; i++){
+        lf.thermal(0.5, 0.0);
+        lf.stabilize(0.3, 10);
+    }
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds." << endl;
+    cout << "Generating OBJ." << endl;
+    timer.start();
+    hf = lf.toHeightField();
+    m = hf.createMesh();
+    m.saveOBJ("../terrainErroded.obj");
+    timer.elapsed();
+    hf.toImage(display, true);
+    display.save("../terrainErroded.jpg");
+    cout << "Done in " << ms << " milliseconds." << endl;
+
+    /* Descripteurs de terrain */
+    cout << "Extracting data from terrain." << endl;
+    timer.start();
+    ScalarField slope = hf.slope().length();
+    ms = timer.elapsed();
+    slope.toImage(display, true);
+    display.save("../slope.jpg");
+    cout << "Slope computed in " << ms << " milliseconds." << endl;
+    timer.start();
+    ScalarField drainingArea = hf.drainingArea();
+    ms = timer.elapsed();
+    drainingArea.toImage(display, true);
+    display.save("../drain.jpg");
+    cout << "Drain area computed in " << ms << " milliseconds." << endl;
+    timer.start();
+    ScalarField streamPower = hf.streamPower();
+    ms = timer.elapsed();
+    streamPower.toImage(display, true);
+    display.save("../streamPower.jpg");
+    cout << "Stream power computed in " << ms << " milliseconds." << endl;
+    timer.start();
+    ScalarField wetnessIndex = hf.wetnessIndex();
+    ms = timer.elapsed();
+    wetnessIndex.toImage(display, true);
+    display.save("../wetnessIndex.jpg");
+    cout << "Wetness index computed in " << ms << " milliseconds." << endl;
+    timer.start();
+    ScalarField access = hf.access(250);
+    ms = timer.elapsed();
+    access.toImage(display, true);
+    display.save("../access.jpg");
+    cout << "Access computed in " << ms << " milliseconds." << endl;
+
+    /* Végétation */
+    cout << "Computing tree density." << endl;
+    timer.start();
+    TreeField tf(lf);
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds" << endl;
+    tf.m_sapinDensity.toImage(display, true);
+    display.save("../treeDensity.jpg");
+    cout << "Computing tree positions." << endl;
+    timer.start();
+    QVector<Vec2> trees = tf.spawnTrees(Vec2(-5, -5), Box2(Vec2(0, 0), Vec2(15, 15)), 3);
+    ms = timer.elapsed();
+    cout << "Done in " << ms << " milliseconds" << endl;
+    tf.toImage(display, trees, 1);
+    display.save("../trees.jpg");
+
+    Sapin sapin;
+    ScalarField sfDisplay;
+    sfDisplay = sapin.dirtHeightMapResponse(lf.sand());
+    sfDisplay.toImage(display, true);
+    display.save("../dirtHeightResponse.jpg");
+    sfDisplay = sapin.heightMapResponse(hf);
+    sfDisplay.toImage(display, true);
+    display.save("../heightResponse.jpg");
+    sfDisplay = sapin.slopeMapResponse(slope);
+    sfDisplay.toImage(display, true);
+    display.save("../slopeResponse.jpg");
+    sfDisplay = sapin.wetnessMapResponse(wetnessIndex);
+    sfDisplay.toImage(display, true);
+    display.save("../wetnessResponse.jpg");
+    sfDisplay = sapin.streamPowerMapResponse(streamPower);
+    sfDisplay.toImage(display, true);
+    display.save("../streamPowerResponse.jpg");
+    sfDisplay = sapin.lightMapResponse(access);
+    sfDisplay.toImage(display, true);
+    display.save("../lightResponse.jpg");
+}
+
 void testTree() {
-//    QImage terrain("../TerrainGeneration/Resources/test.png");
+    QImage terrain("../TerrainGeneration/Resources/test.png");
     LayerField lf;
     lf.load(terrain, Vec2(0, 0), Vec2(100, 100), 0, 3000);
 
@@ -25,7 +157,7 @@ void testTree() {
     tree.save("../treeDensity.jpg");
 
     Vec2 origin(0, 0);
-    Box2 tileBox(Vec2(0, 0), Vec2(10, 10));
+    Box2 tileBox(Vec2(0, 0), Vec2(50, 50));
     QVector<Vec2> sapins = tf.spawnTrees(origin, tileBox, 2.0);
     tf.toImage(tree, sapins, 20.0);
     tree.save("../treePositions.jpg");
@@ -153,14 +285,10 @@ int main(int argc, char *argv[])
 //    testInterface(argc, argv);
 //    testIndicateursTerrain();
 //    testInterpolationHauteur();
-<<<<<<< HEAD
 //    testPoisson();
 //    testLayerField();
-    testTree();
-=======
-//  testPoisson();
-    testLayerField();
->>>>>>> 0a039e9eb11b37f2be0915e5cbd731a99a44109d
+//    testTree();
+    demo();
 
     return 0;
 }

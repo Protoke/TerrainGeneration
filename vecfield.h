@@ -7,6 +7,9 @@
 
 class ScalarField;
 
+/**
+ * @brief Classe abstraite représentant une grille de vecteurs.
+ */
 class VecField : public Array2
 {
 public:
@@ -17,6 +20,9 @@ public:
     virtual ScalarField length() const = 0;
 };
 
+/**
+ * @brief Représentation d'une grille de vecteurs 2D.
+ */
 class Vec2Field : public VecField
 {
 public:
